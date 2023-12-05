@@ -1,18 +1,18 @@
 import * as BABYLON from 'babylonjs'
 
-import {LAYER0_Z, LAYER1_Z} from '../../utils/constants';
+import {LAYER0_Z, LAYER1_Z} from '../../utils/constants'
 
-import {EmptySlot} from './EmptySlot';
-import {Experience} from "../Experience";
-import {Slot} from './Slot';
+import {EmptySlot} from './EmptySlot'
+import {Experience} from '../Experience'
+import {Slot} from './Slot'
 
 export class Board {
   experience: any
   scene: any
   mesh: any
-  size: number = 10
-  slotWidth: number = 0.471
-  slotHeight: number = 0.77
+  size = 10
+  slotWidth = 0.471
+  slotHeight = 0.77
 
   constructor() {
     this.experience = new Experience()

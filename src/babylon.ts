@@ -1,4 +1,4 @@
-import {Experience} from './Experience/Experience';
+import {Experience} from './Experience/Experience'
 
 export const loadBabylon = () => {
   const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement

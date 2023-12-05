@@ -1,17 +1,17 @@
 import * as BABYLON from 'babylonjs'
 
-import {Card} from '../Common/Card';
-import {Experience} from "../Experience";
-import {LAYER_HOME_Z} from '../../utils/constants';
+import {Card} from '../Common/Card'
+import {Experience} from '../Experience'
+import {LAYER_HOME_Z} from '../../utils/constants'
 
 export class Home {
   experience: any
   scene: any
   mesh: any
-  size: number = 10
-  cardWidth: number = 0.471
-  cardHeight: number = 0.77
-  cardGap: number = 0.1
+  size = 10
+  cardWidth = 0.471
+  cardHeight = 0.77
+  cardGap = 0.1
 
   constructor() {
     this.experience = new Experience()

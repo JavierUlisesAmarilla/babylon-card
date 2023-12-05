@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {Experience} from "../Experience";
+import {Experience} from '../Experience'
 
 export class EmptySlot {
   experience: any
