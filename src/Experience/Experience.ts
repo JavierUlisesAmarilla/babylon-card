@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs'
 
 import {Board} from './Board/Board';
 import {Home} from './Home/Home';
+import {Mouse} from './Utils/Mouse';
 
 let instance: Experience
 
@@ -11,8 +12,9 @@ export class Experience {
   scene: any
   camera: any
   hemisphericLight: any
-  board: any
   home: any
+  board: any
+  mouse: any
 
   constructor() {
     if (instance) {
@@ -44,6 +46,8 @@ export class Experience {
     // Assets
     this.home = new Home()
     this.board = new Board()
+    this.mouse = new Mouse()
+    this.mouse.dragPlane = this.board.mesh
 
     // Utils
     new BABYLON.Debug.AxesViewer(this.scene, 1)
