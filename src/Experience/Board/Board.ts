@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {LAYER_BOARD_Z, LAYER_SLOT_Z} from '../../utils/constants'
+import {LAYER_BOARD_Z, LAYER_PICK_Z, LAYER_SLOT_Z} from '../../utils/constants'
 
 import {Cards} from './Cards'
 import {EmptySlot} from './EmptySlot'
@@ -33,6 +33,13 @@ export class Board {
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
     this.root.material = material
     this.root.position.set(0, 0.8, LAYER_BOARD_Z)
+
+    // Pick layer
+    const layerPick = BABYLON.MeshBuilder.CreatePlane('layerPick', {width: this.size, height: this.size}, this.scene)
+    layerPick.parent = this.root
+    layerPick.setEnabled(false)
+    layerPick.position.set(0, 0, LAYER_PICK_Z)
+    this.mouse.dragPlane = layerPick
 
     // Top slots
     this.topSlots = new BABYLON.TransformNode('topSlots')
