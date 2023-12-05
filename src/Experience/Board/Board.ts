@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {LAYER_BOARD_Z, LAYER_SLOT_Z} from '../../utils/constants'
+import {LAYER_BOARD_Z, LAYER_CARD_Z, LAYER_SLOT_Z} from '../../utils/constants'
 
 import {Cards} from './Cards'
 import {EmptySlot} from './EmptySlot'
@@ -17,6 +17,11 @@ export class Board {
   slotWidth = 0.471
   slotHeight = 0.77
 
+  topLeftSlot!: EmptySlot
+  topRightSlot!: EmptySlot
+  bottomLeftSlot!: EmptySlot
+  bottomRightSlot!: EmptySlot
+
   constructor() {
     this.experience = new Experience()
     this.scene = this.experience.scene
@@ -32,7 +37,13 @@ export class Board {
     layer1.parent = this.root
     layer1.position.z = LAYER_SLOT_Z
     layer1.visibility = 0
-    this.mouse.dragPlane = layer1
+
+    // Layer2
+    const layer2 = BABYLON.MeshBuilder.CreatePlane('layer2', {width: this.size, height: this.size}, this.scene)
+    layer2.parent = this.root
+    layer2.position.z = LAYER_CARD_Z
+    layer2.visibility = 0
+    this.mouse.dragPlane = layer2
 
     // Top slots
     const topSlots = new BABYLON.TransformNode('topSlots')
@@ -42,7 +53,7 @@ export class Board {
     for (let i = 0; i < 10; i++) {
       const x = i % 5
       const y = Math.floor(i / 5)
-      const slot = new Slot(this.slotWidth, this.slotHeight, x, y)
+      const slot = new Slot({width: this.slotWidth, height: this.slotHeight, x, y})
       slot.root.parent = topSlots
     }
 
@@ -54,19 +65,19 @@ export class Board {
     for (let i = 0; i < 10; i++) {
       const x = i % 5
       const y = Math.floor(i / 5)
-      const slot = new Slot(this.slotWidth, this.slotHeight, x, y)
+      const slot = new Slot({width: this.slotWidth, height: this.slotHeight, x, y})
       slot.root.parent = bottomSlots
     }
 
     // Side slots
-    const topLeftSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(-1.2 - this.slotWidth / 2, 0.9, 0))
-    topLeftSlot.root.parent = layer1
-    const topRightSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(1.24 + this.slotWidth / 2, 0.9, 0))
-    topRightSlot.root.parent = layer1
-    const bottomLeftSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(-1.2 - this.slotWidth / 2, -0.9, 0))
-    bottomLeftSlot.root.parent = layer1
-    const bottomRightSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(1.24 + this.slotWidth / 2, -0.9, 0))
-    bottomRightSlot.root.parent = layer1
+    this.topLeftSlot = new EmptySlot({width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(-1.2 - this.slotWidth / 2, 0.9, 0)})
+    this.topLeftSlot.root.parent = layer1
+    this.topRightSlot = new EmptySlot({width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(1.24 + this.slotWidth / 2, 0.9, 0)})
+    this.topRightSlot.root.parent = layer1
+    this.bottomLeftSlot = new EmptySlot({width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(-1.2 - this.slotWidth / 2, -0.9, 0)})
+    this.bottomLeftSlot.root.parent = layer1
+    this.bottomRightSlot = new EmptySlot({width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(1.24 + this.slotWidth / 2, -0.9, 0)})
+    this.bottomRightSlot.root.parent = layer1
 
     // Cards
     new Cards()

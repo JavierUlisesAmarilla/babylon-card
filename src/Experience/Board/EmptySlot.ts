@@ -10,7 +10,15 @@ export class EmptySlot {
   position
   root
 
-  constructor(width: number, height: number, position: BABYLON.Vector3) {
+  constructor({
+    width,
+    height,
+    position
+  }: {
+    width: number,
+    height: number,
+    position: BABYLON.Vector3
+  }) {
     this.experience = new Experience()
     this.scene = this.experience.scene
     this.width = width

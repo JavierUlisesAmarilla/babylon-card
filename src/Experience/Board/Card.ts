@@ -46,7 +46,7 @@ export class Card {
         this.isPointerDown = true
 
         if (this.gameState.step === 'select') {
-          // TODO
+          this.animSelect()
         }
       }
     })
@@ -62,7 +62,7 @@ export class Card {
     })
   }
 
-  animSelect () {
-    // TODO
+  animSelect() {
+    console.log('test: ', this.experience.board.bottomRightSlot.position.clone(), this.root.position.clone())
   }
 }
