@@ -1,5 +1,7 @@
 import * as BABYLON from 'babylonjs'
 
+import {Board} from './Board/Board';
+
 let instance: Experience
 
 export class Experience {
@@ -7,6 +9,8 @@ export class Experience {
   engine: any
   scene: any
   camera: any
+  hemisphericLight: any
+  board: any
 
   constructor() {
     if (instance) {
@@ -22,10 +26,10 @@ export class Experience {
 
     this.scene = new BABYLON.Scene(this.engine)
 
-    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(0, 0, 0))
+    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 2, 7, new BABYLON.Vector3(0, 0, 0))
     this.camera.attachControl(this.canvas, true)
 
-    new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0), this.scene)
+    this.hemisphericLight = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0), this.scene)
 
     this.engine.runRenderLoop(() => {
       instance.update()
@@ -35,7 +39,11 @@ export class Experience {
       instance.resize()
     })
 
-    this.loadScene()
+    // Utils
+    new BABYLON.Debug.AxesViewer(this.scene, 1)
+
+    // Assets
+    this.board = new Board()
   }
 
   update() {
@@ -43,11 +51,6 @@ export class Experience {
   }
 
   resize() {
-    console.log('Experience#resize')
     this.engine?.resize()
-  }
-
-  loadScene() {
-    BABYLON.SceneLoader.ImportMeshAsync('', 'https://assets.babylonjs.com/meshes/', 'box.babylon')
   }
 }
