@@ -1,53 +1,59 @@
 import * as BABYLON from 'babylonjs'
 
 import {Experience} from '../Experience'
+import {GAP} from '../../utils/constants'
 
 export class Card {
   experience
   scene
+  gameState
   mouse
-  width
-  height
-  position
-  texture
-  mesh
+  root
 
-  isPlaying = false
   isPointerDown = false
 
   constructor({
+    name, // Should be unique
     width,
     height,
     position,
-    texture
+    backTextureUrl
   }: {
+    name: string
     width: number
     height: number
     position: BABYLON.Vector3
-    texture: string
+    backTextureUrl: string
   }) {
     this.experience = new Experience()
     this.scene = this.experience.scene
+    this.gameState = this.experience.gameState
     this.mouse = this.experience.mouse
-    this.width = width
-    this.height = height
-    this.position = position
-    this.texture = texture
-    this.mesh = BABYLON.MeshBuilder.CreatePlane('card', {width: this.width, height: this.height}, this.scene)
-    const material = new BABYLON.StandardMaterial('card')
-    material.diffuseTexture = new BABYLON.Texture(this.texture)
-    this.mesh.material = material
-    this.mesh.position.copyFrom(this.position)
+    this.root = new BABYLON.TransformNode(name)
+    this.root.position.copyFrom(position)
+    this.root.rotation.y = Math.PI
 
-    this.mouse.on('pointerDown', (mesh: BABYLON.Mesh) => {
-      if (mesh === this.mesh) {
+    const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    back.parent = this.root
+    const material = new BABYLON.StandardMaterial(name)
+    material.diffuseTexture = new BABYLON.Texture(backTextureUrl)
+    back.material = material
+    back.position.z = GAP / 2
+    back.rotation.y = Math.PI
+
+    this.mouse.on('pointerDown', (root: BABYLON.Mesh) => {
+      if (root.name === name) {
         this.isPointerDown = true
+
+        if (this.gameState.step === 'select') {
+          // TODO
+        }
       }
     })
 
-    this.mouse.on('pointerMove', (mesh: BABYLON.Mesh, diff: BABYLON.Vector3) => {
-      if (mesh === this.mesh && this.isPointerDown && this.isPlaying) {
-        this.mesh.position.addInPlace(diff)
+    this.mouse.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
+      if (root.name === name && this.isPointerDown && this.gameState.step === 'play') {
+        this.root.position.addInPlace(diff)
       }
     })
 

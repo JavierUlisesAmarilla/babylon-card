@@ -26,12 +26,13 @@ export class Cards {
       const x = i % 5
       const y = Math.floor(i / 5)
       const card = new Card({
+        name: `card${i}`,
         width: this.cardWidth,
         height: this.cardHeight,
         position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (y - middleY) * (this.cardHeight + this.cardGap), 0),
-        texture: `assets/images/cards/(${i}).webp`
+        backTextureUrl: `assets/images/cards/(${i}).webp`
       })
-      card.mesh.parent = cards
+      card.root.parent = cards
     }
   }
 }

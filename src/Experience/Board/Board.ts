@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {LAYER0_Z, LAYER1_Z} from '../../utils/constants'
+import {LAYER_BOARD_Z, LAYER_SLOT_Z} from '../../utils/constants'
 
 import {Cards} from './Cards'
 import {EmptySlot} from './EmptySlot'
@@ -25,12 +25,12 @@ export class Board {
     const material = new BABYLON.StandardMaterial('board')
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
     this.mesh.material = material
-    this.mesh.position.z = LAYER0_Z
+    this.mesh.position.z = LAYER_BOARD_Z
 
     // Layer1
     const layer1 = BABYLON.MeshBuilder.CreatePlane('layer1', {width: this.size, height: this.size}, this.scene)
     layer1.parent = this.mesh
-    layer1.position.z = LAYER1_Z
+    layer1.position.z = LAYER_SLOT_Z
     layer1.visibility = 0
     this.mouse.dragPlane = layer1
 

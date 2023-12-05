@@ -2,6 +2,7 @@
 import * as BABYLON from 'babylonjs'
 
 import {Board} from './Board/Board'
+import {GameState} from './Utils/GameState'
 import {Mouse} from './Utils/Mouse'
 
 let instance: Experience
@@ -12,8 +13,10 @@ export class Experience {
   scene!: BABYLON.Scene
   camera!: BABYLON.ArcRotateCamera
   hemisphericLight!: BABYLON.HemisphericLight
-  board!: Board
+
+  gameState!: GameState
   mouse!: Mouse
+  board!: Board
 
   constructor() {
     if (instance) {
@@ -40,6 +43,7 @@ export class Experience {
     })
 
     // Assets
+    this.gameState = new GameState()
     this.mouse = new Mouse()
     this.board = new Board()
 
