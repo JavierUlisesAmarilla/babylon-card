@@ -1,6 +1,6 @@
 import {Experience} from './Experience/Experience';
 
-export const loadScene = () => {
+export const loadBabylon = () => {
   const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
 
   if (!canvas) {

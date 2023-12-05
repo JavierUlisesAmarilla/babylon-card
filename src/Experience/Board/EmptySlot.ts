@@ -20,8 +20,8 @@ export class EmptySlot {
   }
 
   init() {
-    this.mesh = BABYLON.MeshBuilder.CreatePlane('board', {width: this.width, height: this.height}, this.scene)
-    this.mesh.material = new BABYLON.StandardMaterial('board')
+    this.mesh = BABYLON.MeshBuilder.CreatePlane('emptySlot', {width: this.width, height: this.height}, this.scene)
+    this.mesh.material = new BABYLON.StandardMaterial('emptySlot')
     this.mesh.material.diffuseTexture = new BABYLON.Texture('assets/images/side-slot.webp')
     this.mesh.position.copyFrom(this.position)
   }

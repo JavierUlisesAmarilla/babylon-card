@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs'
 
 import {Board} from './Board/Board';
+import {Home} from './Home/Home';
 
 let instance: Experience
 
@@ -11,6 +12,7 @@ export class Experience {
   camera: any
   hemisphericLight: any
   board: any
+  home: any
 
   constructor() {
     if (instance) {
@@ -39,11 +41,12 @@ export class Experience {
       instance.resize()
     })
 
+    // Assets
+    this.home = new Home()
+    this.board = new Board()
+
     // Utils
     new BABYLON.Debug.AxesViewer(this.scene, 1)
-
-    // Assets
-    this.board = new Board()
   }
 
   update() {
