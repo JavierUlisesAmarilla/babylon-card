@@ -83,7 +83,9 @@ export class Card {
 
   animPick() {
     this.root.setParent(this.experience.board.root)
-    this.root.position.set(0, -2.6, LAYER_PICK_Z)
+    this.root.position.set(0, -2.35, LAYER_PICK_Z)
     this.root.rotation.set(Math.PI * BOARD_ANGLE_FACTOR, Math.PI, 0)
+    const scale = 1.3
+    this.root.scaling.set(scale, scale, scale)
   }
 }
