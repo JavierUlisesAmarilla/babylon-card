@@ -61,35 +61,26 @@ export class Mouse extends EventEmitter {
       setTimeout(() => {
         this.camera.detachControl()
       }, 0)
+      this.trigger('pointerDown', [mesh])
     }
-
-    this.trigger('pointerDown', [mesh])
   }
 
   onPointerUp() {
     if (this.startingPoint) {
       this.camera.attachControl(this.canvas, true)
       this.startingPoint = null
-      return
+      this.trigger('pointerUp')
     }
-
-    this.trigger('pointerUp')
   }
 
   onPointerMove() {
-    if (!this.startingPoint || !this.currentMesh) {
-      return
-    }
-
     const curPos = this.getGroundPosition()
 
-    if (!curPos) {
-      return
+    if (this.startingPoint && this.currentMesh && curPos) {
+      const diff = curPos.subtract(this.startingPoint)
+      // this.currentMesh.position.addInPlace(diff)
+      this.trigger('pointerMove', [this.currentMesh, diff])
+      this.startingPoint = curPos
     }
-
-    const diff = curPos.subtract(this.startingPoint)
-    // this.currentMesh.position.addInPlace(diff)
-    this.trigger('pointerMove', [this.currentMesh, diff])
-    this.startingPoint = curPos
   }
 }

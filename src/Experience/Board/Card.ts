@@ -10,6 +10,7 @@ export class Card {
   gameState
   mouse
   root
+  back
 
   isPointerDown = false
   isPicked = false
@@ -35,13 +36,13 @@ export class Card {
     this.root.position.copyFrom(position)
     this.root.rotation.y = Math.PI
 
-    const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
-    back.parent = this.root
+    this.back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    this.back.parent = this.root
     const material = new BABYLON.StandardMaterial(name)
     material.diffuseTexture = new BABYLON.Texture(backTextureUrl)
-    back.material = material
-    back.position.z = GAP / 2
-    back.rotation.y = Math.PI
+    this.back.material = material
+    this.back.position.z = GAP / 2
+    this.back.rotation.y = Math.PI
 
     this.mouse.on('pointerDown', (root: BABYLON.Mesh) => {
       if (root.name === name) {
@@ -70,6 +71,10 @@ export class Card {
     })
 
     this.mouse.on('pointerUp', () => {
+      if (this.isPointerDown) {
+        console.log('TODO')
+      }
+
       this.isPointerDown = false
     })
   }
