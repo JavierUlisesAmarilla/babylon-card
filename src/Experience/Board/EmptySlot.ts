@@ -8,7 +8,7 @@ export class EmptySlot {
   width
   height
   position
-  mesh
+  root
 
   constructor(width: number, height: number, position: BABYLON.Vector3) {
     this.experience = new Experience()
@@ -16,10 +16,10 @@ export class EmptySlot {
     this.width = width
     this.height = height
     this.position = position
-    this.mesh = BABYLON.MeshBuilder.CreatePlane('emptySlot', {width: this.width, height: this.height}, this.scene)
+    this.root = BABYLON.MeshBuilder.CreatePlane('emptySlot', {width: this.width, height: this.height}, this.scene)
     const material = new BABYLON.StandardMaterial('emptySlot')
     material.diffuseTexture = new BABYLON.Texture('assets/images/side-slot.webp')
-    this.mesh.material = material
-    this.mesh.position.copyFrom(this.position)
+    this.root.material = material
+    this.root.position.copyFrom(this.position)
   }
 }

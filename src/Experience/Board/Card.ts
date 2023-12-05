@@ -61,4 +61,8 @@ export class Card {
       this.isPointerDown = false
     })
   }
+
+  animSelect () {
+    // TODO
+  }
 }

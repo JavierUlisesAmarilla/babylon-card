@@ -11,7 +11,7 @@ export class Board {
   experience
   scene
   mouse
-  mesh
+  root
 
   size = 10
   slotWidth = 0.471
@@ -21,15 +21,15 @@ export class Board {
     this.experience = new Experience()
     this.scene = this.experience.scene
     this.mouse = this.experience.mouse
-    this.mesh = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size}, this.scene)
+    this.root = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size}, this.scene)
     const material = new BABYLON.StandardMaterial('board')
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
-    this.mesh.material = material
-    this.mesh.position.z = LAYER_BOARD_Z
+    this.root.material = material
+    this.root.position.z = LAYER_BOARD_Z
 
     // Layer1
     const layer1 = BABYLON.MeshBuilder.CreatePlane('layer1', {width: this.size, height: this.size}, this.scene)
-    layer1.parent = this.mesh
+    layer1.parent = this.root
     layer1.position.z = LAYER_SLOT_Z
     layer1.visibility = 0
     this.mouse.dragPlane = layer1
@@ -43,7 +43,7 @@ export class Board {
       const x = i % 5
       const y = Math.floor(i / 5)
       const slot = new Slot(this.slotWidth, this.slotHeight, x, y)
-      slot.mesh.parent = topSlots
+      slot.root.parent = topSlots
     }
 
     // Bottom slots
@@ -55,18 +55,18 @@ export class Board {
       const x = i % 5
       const y = Math.floor(i / 5)
       const slot = new Slot(this.slotWidth, this.slotHeight, x, y)
-      slot.mesh.parent = bottomSlots
+      slot.root.parent = bottomSlots
     }
 
     // Side slots
     const topLeftSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(-1.2 - this.slotWidth / 2, 0.9, 0))
-    topLeftSlot.mesh.parent = layer1
+    topLeftSlot.root.parent = layer1
     const topRightSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(1.24 + this.slotWidth / 2, 0.9, 0))
-    topRightSlot.mesh.parent = layer1
+    topRightSlot.root.parent = layer1
     const bottomLeftSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(-1.2 - this.slotWidth / 2, -0.9, 0))
-    bottomLeftSlot.mesh.parent = layer1
+    bottomLeftSlot.root.parent = layer1
     const bottomRightSlot = new EmptySlot(this.slotWidth, this.slotHeight, new BABYLON.Vector3(1.24 + this.slotWidth / 2, -0.9, 0))
-    bottomRightSlot.mesh.parent = layer1
+    bottomRightSlot.root.parent = layer1
 
     // Cards
     new Cards()
