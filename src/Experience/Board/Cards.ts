@@ -2,7 +2,6 @@ import * as BABYLON from 'babylonjs'
 
 import {Card} from './Card'
 import {Experience} from '../Experience'
-import {LAYER_HOME_Z} from '../../utils/constants'
 
 export class Cards {
   experience
@@ -18,7 +17,8 @@ export class Cards {
     this.scene = this.experience.scene
 
     const cards = new BABYLON.TransformNode('cards')
-    cards.position.set(0, 0, LAYER_HOME_Z)
+    cards.position.set(0, -1.5, -2)
+    cards.rotation.x = -Math.PI * 0.2
     const middleX = 2
     const middleY = 1
 

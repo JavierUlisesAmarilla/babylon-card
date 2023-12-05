@@ -27,7 +27,7 @@ export class Experience {
     this.canvas = canvas
     this.engine = new BABYLON.Engine(this.canvas, true)
     this.scene = new BABYLON.Scene(this.engine)
-    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 2, 7, new BABYLON.Vector3(0, 0, 0))
+    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI * 0.7, 7, new BABYLON.Vector3(0, 0, 0))
     this.camera.attachControl(this.canvas, true)
     this.hemisphericLight = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0), this.scene)
 
