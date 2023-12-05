@@ -3,14 +3,13 @@ import * as BABYLON from 'babylonjs'
 import {Experience} from '../Experience'
 
 export class Card {
-  width: number
-  height: number
-  position: BABYLON.Vector3
-  texture: string
-
-  experience: any
-  scene: any
-  mesh: any
+  experience
+  scene
+  width
+  height
+  position
+  texture
+  mesh
 
   constructor({
     width,
@@ -29,13 +28,11 @@ export class Card {
     this.height = height
     this.position = position
     this.texture = texture
-    this.init()
-  }
-
-  init() {
     this.mesh = BABYLON.MeshBuilder.CreatePlane('card', {width: this.width, height: this.height}, this.scene)
-    this.mesh.material = new BABYLON.StandardMaterial('card')
-    this.mesh.material.diffuseTexture = new BABYLON.Texture(this.texture)
+    const material = new BABYLON.StandardMaterial('card')
+    material.diffuseTexture = new BABYLON.Texture(this.texture)
+    this.mesh.material = material
     this.mesh.position.copyFrom(this.position)
+    // console.log('Card: this.mesh: ', this.mesh)
   }
 }

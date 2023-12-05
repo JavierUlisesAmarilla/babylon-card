@@ -1,39 +1,42 @@
 import * as BABYLON from 'babylonjs'
 
-import {Experience} from '../Experience';
+import {EventEmitter} from './EventEmitter'
+import {Experience} from '../Experience'
 
-export class Mouse {
-  experience: any
-  canvas: any
-  scene: any
-  camera: any
+export class Mouse extends EventEmitter {
+  experience
+  canvas
+  scene
+  camera
 
-  startingPoint: BABYLON.Vector3 | null = null
-  currentMesh: any
-  dragPlane: any
+  startingPoint!: BABYLON.Nullable<BABYLON.Vector3>
+  currentMesh!: BABYLON.AbstractMesh
+  dragPlane!: BABYLON.AbstractMesh
 
   constructor() {
+    super()
+
     this.experience = new Experience()
     this.canvas = this.experience.canvas
     this.scene = this.experience.scene
     this.camera = this.experience.camera
 
-    this.scene.onPointerObservable.add((pointerInfo: any) => {
+    this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
-        case BABYLON.PointerEventTypes.POINTERDOWN:
-          if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != this.dragPlane) {
-            this.onPointerDown(pointerInfo.pickInfo.pickedMesh)
-          }
+      case BABYLON.PointerEventTypes.POINTERDOWN:
+        if (pointerInfo.pickInfo?.hit && pointerInfo.pickInfo.pickedMesh && pointerInfo.pickInfo.pickedMesh != this.dragPlane) {
+          this.onPointerDown(pointerInfo.pickInfo.pickedMesh)
+        }
 
-          break;
-        case BABYLON.PointerEventTypes.POINTERUP:
-          this.onPointerUp();
-          break;
-        case BABYLON.PointerEventTypes.POINTERMOVE:
-          this.onPointerMove();
-          break;
+        break
+      case BABYLON.PointerEventTypes.POINTERUP:
+        this.onPointerUp()
+        break
+      case BABYLON.PointerEventTypes.POINTERMOVE:
+        this.onPointerMove()
+        break
       }
-    });
+    })
   }
 
   getGroundPosition() {
@@ -41,48 +44,54 @@ export class Mouse {
       return null
     }
 
-    var pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh: any) => {return mesh === this.dragPlane});
+    const pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh: BABYLON.AbstractMesh) => {return mesh === this.dragPlane})
 
-    if (pickInfo.hit) {
-      return pickInfo.pickedPoint;
+    if (pickInfo?.hit) {
+      return pickInfo.pickedPoint
     }
 
-    return null;
+    return null
   }
 
-  onPointerDown(mesh: any) {
-    console.log('Mouse#onPointerDown: mesh: ', mesh)
-    this.currentMesh = mesh;
-    this.startingPoint = this.getGroundPosition();
+  onPointerDown(mesh: BABYLON.AbstractMesh) {
+    // console.log('Mouse#onPointerDown: mesh: ', mesh)
+    this.currentMesh = mesh
+    this.startingPoint = this.getGroundPosition()
 
     if (this.startingPoint) {
       setTimeout(() => {
-        this.camera.detachControl(this.canvas);
-      }, 0);
+        this.camera.detachControl()
+      }, 0)
     }
+
+    this.trigger('pointerDown', mesh)
   }
 
   onPointerUp() {
     if (this.startingPoint) {
-      this.camera.attachControl(this.canvas, true);
-      this.startingPoint = null;
-      return;
+      this.camera.attachControl(this.canvas, true)
+      this.startingPoint = null
+      return
     }
+
+    this.trigger('pointerUp')
   }
 
   onPointerMove() {
-    if (!this.startingPoint) {
-      return;
+    if (!this.startingPoint || !this.currentMesh) {
+      return
     }
 
-    const current = this.getGroundPosition();
+    const curPos = this.getGroundPosition()
+    // console.log('Mouse#onPointerMove: curPos: ', curPos)
 
-    if (!current) {
-      return;
+    if (!curPos) {
+      return
     }
 
-    const diff = current.subtract(this.startingPoint);
-    this.currentMesh.position.addInPlace(diff);
-    this.startingPoint = current;
+    const diff = curPos.subtract(this.startingPoint)
+    // this.currentMesh.position.addInPlace(diff)
+    this.trigger('pointerMove', {mesh: this.currentMesh, diff})
+    this.startingPoint = curPos
   }
-};
+}

@@ -1,13 +1,13 @@
 import * as BABYLON from 'babylonjs'
 
-import {Card} from '../Common/Card'
+import {Card} from './Card'
 import {Experience} from '../Experience'
 import {LAYER_HOME_Z} from '../../utils/constants'
 
-export class Home {
-  experience: any
-  scene: any
-  mesh: any
+export class Cards {
+  experience
+  scene
+
   size = 10
   cardWidth = 0.471
   cardHeight = 0.77
@@ -16,11 +16,7 @@ export class Home {
   constructor() {
     this.experience = new Experience()
     this.scene = this.experience.scene
-    this.init()
-  }
 
-  init() {
-    // Cards
     const cards = new BABYLON.TransformNode('cards')
     cards.position.set(0, 0, LAYER_HOME_Z)
     const middleX = 2

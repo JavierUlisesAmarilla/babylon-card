@@ -3,12 +3,12 @@ import * as BABYLON from 'babylonjs'
 import {Experience} from '../Experience'
 
 export class EmptySlot {
-  experience: any
-  scene: any
-  width: number
-  height: number
-  position: BABYLON.Vector3
-  mesh: any
+  experience
+  scene
+  width
+  height
+  position
+  mesh
 
   constructor(width: number, height: number, position: BABYLON.Vector3) {
     this.experience = new Experience()
@@ -16,13 +16,10 @@ export class EmptySlot {
     this.width = width
     this.height = height
     this.position = position
-    this.init()
-  }
-
-  init() {
     this.mesh = BABYLON.MeshBuilder.CreatePlane('emptySlot', {width: this.width, height: this.height}, this.scene)
-    this.mesh.material = new BABYLON.StandardMaterial('emptySlot')
-    this.mesh.material.diffuseTexture = new BABYLON.Texture('assets/images/side-slot.webp')
+    const material = new BABYLON.StandardMaterial('emptySlot')
+    material.diffuseTexture = new BABYLON.Texture('assets/images/side-slot.webp')
+    this.mesh.material = material
     this.mesh.position.copyFrom(this.position)
   }
 }
