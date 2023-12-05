@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
+import { BOARD_ANGLE_FACTOR } from '../utils/constants'
 import {Board} from './Board/Board'
 import {GameState} from './Utils/GameState'
 import {Mouse} from './Utils/Mouse'
@@ -30,7 +31,7 @@ export class Experience {
     this.canvas = canvas
     this.engine = new BABYLON.Engine(this.canvas, true)
     this.scene = new BABYLON.Scene(this.engine)
-    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI * 0.7, 7, new BABYLON.Vector3(0, 0, 0))
+    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI * (0.5 + BOARD_ANGLE_FACTOR), 5, new BABYLON.Vector3(0, 0, 0))
     this.camera.attachControl(this.canvas, true)
     this.hemisphericLight = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0), this.scene)
 

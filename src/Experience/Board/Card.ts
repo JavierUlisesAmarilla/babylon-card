@@ -1,7 +1,8 @@
 import * as BABYLON from 'babylonjs'
 
+import { BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z } from '../../utils/constants'
+
 import {Experience} from '../Experience'
-import {GAP} from '../../utils/constants'
 
 export class Card {
   experience
@@ -11,6 +12,7 @@ export class Card {
   root
 
   isPointerDown = false
+  isPicked = false
 
   constructor({
     name, // Should be unique
@@ -45,8 +47,20 @@ export class Card {
       if (root.name === name) {
         this.isPointerDown = true
 
-        if (this.gameState.step === 'select') {
+        switch (this.gameState.step) {
+        case 'select':
           this.animSelect()
+          this.experience.board.cards.root.setEnabled(false)
+          this.gameState.step = 'play'
+          break
+        case 'play':
+          if (this.isPicked) {
+            // TODO
+          } else {
+            this.animPick()
+            this.isPicked = true
+          }
+          break
         }
       }
     })
@@ -63,6 +77,15 @@ export class Card {
   }
 
   animSelect() {
-    console.log('test: ', this.experience.board.bottomRightSlot.position.clone(), this.root.position.clone())
+    this.root.setParent(this.experience.board.root)
+    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
+    this.root.position.set(bottomRightSlotPos.x, bottomRightSlotPos.y, LAYER_CARD_Z)
+    this.root.rotation.set(0, Math.PI, 0)
+  }
+
+  animPick() {
+    this.root.setParent(this.experience.board.root)
+    this.root.position.set(0, -2.6, LAYER_PICK_Z)
+    this.root.rotation.set(Math.PI * BOARD_ANGLE_FACTOR, Math.PI, 0)
   }
 }
