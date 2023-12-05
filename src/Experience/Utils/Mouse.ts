@@ -54,7 +54,6 @@ export class Mouse extends EventEmitter {
   }
 
   onPointerDown(mesh: BABYLON.AbstractMesh) {
-    // console.log('Mouse#onPointerDown: mesh: ', mesh)
     this.currentMesh = mesh
     this.startingPoint = this.getGroundPosition()
 
@@ -64,7 +63,7 @@ export class Mouse extends EventEmitter {
       }, 0)
     }
 
-    this.trigger('pointerDown', mesh)
+    this.trigger('pointerDown', [mesh])
   }
 
   onPointerUp() {
@@ -83,7 +82,6 @@ export class Mouse extends EventEmitter {
     }
 
     const curPos = this.getGroundPosition()
-    // console.log('Mouse#onPointerMove: curPos: ', curPos)
 
     if (!curPos) {
       return
@@ -91,7 +89,7 @@ export class Mouse extends EventEmitter {
 
     const diff = curPos.subtract(this.startingPoint)
     // this.currentMesh.position.addInPlace(diff)
-    this.trigger('pointerMove', {mesh: this.currentMesh, diff})
+    this.trigger('pointerMove', [this.currentMesh, diff])
     this.startingPoint = curPos
   }
 }
