@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
-import { BOARD_ANGLE_FACTOR } from '../utils/constants'
+import {BOARD_ANGLE_FACTOR} from '../utils/constants'
 import {Board} from './Board/Board'
 import {GameState} from './Utils/GameState'
 import {Mouse} from './Utils/Mouse'
@@ -47,6 +47,7 @@ export class Experience {
     this.gameState = new GameState()
     this.mouse = new Mouse()
     this.board = new Board()
+    this.mouse.dragPlane = this.board.root
 
     // Utils
     new BABYLON.Debug.AxesViewer(this.scene, 1)

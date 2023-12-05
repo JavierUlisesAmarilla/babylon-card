@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import { BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z } from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
 
 import {Experience} from '../Experience'
 
@@ -45,8 +45,6 @@ export class Card {
 
     this.mouse.on('pointerDown', (root: BABYLON.Mesh) => {
       if (root.name === name) {
-        this.isPointerDown = true
-
         switch (this.gameState.step) {
         case 'select':
           this.animSelect()
@@ -55,7 +53,7 @@ export class Card {
           break
         case 'play':
           if (this.isPicked) {
-            // TODO
+            this.isPointerDown = true
           } else {
             this.animPick()
             this.isPicked = true
