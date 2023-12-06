@@ -17,6 +17,7 @@ export class Card {
   isPicked = false
   prevPos = new BABYLON.Vector3()
   prevRot = new BABYLON.Vector3()
+  isAnimating = false
 
   constructor({
     name, // Should be unique
@@ -48,12 +49,14 @@ export class Card {
     this.back.position.z = GAP / 2
     this.back.rotation.y = Math.PI
 
-    this.mouse.on('pointerDown', (root: BABYLON.Mesh) => {
-      if (root.name === name) {
+    this.mouse.on('pointerDown', async (root: BABYLON.Mesh) => {
+      if (root.name === name && !this.isAnimating) {
+        this.isAnimating = true
+
         switch (this.gameState.step) {
         case 'select':
-          this.animSelect()
           this.experience.board.cards.root.setEnabled(false)
+          await this.animSelect()
           this.gameState.step = 'play'
           break
         case 'play':
@@ -62,11 +65,13 @@ export class Card {
             this.prevRot.copyFrom(this.root.rotation)
             this.isPointerDown = true
           } else {
-            this.animPick()
+            await this.animPick()
             this.isPicked = true
           }
           break
         }
+
+        this.isAnimating = false
       }
     })
 
@@ -76,29 +81,64 @@ export class Card {
       }
     })
 
-    this.mouse.on('pointerUp', () => {
-      if (this.isPointerDown) {
+    this.mouse.on('pointerUp', async () => {
+      if (this.isPointerDown && !this.isAnimating) {
+        this.isAnimating = true
         const pickedMesh = this.raycast.getPickedMesh()
 
         if (pickedMesh) {
-          this.animDrop(pickedMesh)
+          await this.animDrop(pickedMesh)
         } else {
-          this.animToPrev()
+          await this.animToPrev()
         }
       }
 
       this.isPointerDown = false
+      this.isAnimating = false
     })
   }
 
-  animSelect() {
+  async animSelect() {
     this.root.setParent(this.experience.board.root)
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
-    this.root.position.set(bottomRightSlotPos.x, bottomRightSlotPos.y, LAYER_CARD_Z)
-    this.root.rotation.set(0, Math.PI, 0)
+
+    const animZoomInPos = new BABYLON.Animation('animZoomInPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    animZoomInPos.setKeys([
+      {
+        frame: 0,
+        value: this.root.position.clone()
+      },
+      {
+        frame: 10,
+        value: new BABYLON.Vector3(0, -3, -3)
+      },
+      {
+        frame: 20,
+        value: new BABYLON.Vector3(0, -3, -3)
+      },
+      {
+        frame: 40,
+        value: new BABYLON.Vector3(bottomRightSlotPos.x, bottomRightSlotPos.y, LAYER_CARD_Z)
+      },
+    ])
+
+    const animZoomInRot = new BABYLON.Animation('animZoomInPos', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    animZoomInRot.setKeys([
+      {
+        frame: 0,
+        value: this.root.rotation.clone()
+      },
+      {
+        frame: 10,
+        value: new BABYLON.Vector3(0, Math.PI, 0)
+      },
+    ])
+
+    this.root.animations = [animZoomInPos, animZoomInRot]
+    await this.scene.beginAnimation(this.root, 0, 40, false).waitAsync()
   }
 
-  animPick() {
+  async animPick() {
     this.root.setParent(this.experience.board.root)
     this.root.position.set(0, -2.35, LAYER_PICK_Z)
     this.root.rotation.set(Math.PI * BOARD_ANGLE_FACTOR, Math.PI, 0)
@@ -106,7 +146,7 @@ export class Card {
     this.root.scaling.set(scale, scale, scale)
   }
 
-  animDrop(pickedMesh: BABYLON.AbstractMesh) {
+  async animDrop(pickedMesh: BABYLON.AbstractMesh) {
     this.root.setParent(this.experience.board.root)
     this.root.position.set(pickedMesh.position.x, pickedMesh.position.y, LAYER_CARD_Z)
     this.root.rotation.copyFrom(pickedMesh.rotation)
@@ -114,7 +154,7 @@ export class Card {
     this.root.scaling.set(scale, scale, scale)
   }
 
-  animToPrev() {
+  async animToPrev() {
     this.root.position.copyFrom(this.prevPos)
     this.root.rotation.copyFrom(this.prevRot)
   }
