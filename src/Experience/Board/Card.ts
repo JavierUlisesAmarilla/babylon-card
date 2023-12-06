@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
 
 import {Experience} from '../Experience'
 
@@ -114,7 +114,7 @@ export class Card {
     this.root.setParent(this.experience.board.root)
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
 
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
         frame: 0,
@@ -134,7 +134,7 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animRot.setKeys([
       {
         frame: 0,
@@ -146,14 +146,14 @@ export class Card {
       },
     ])
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, 40, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animPick() {
     this.root.setParent(this.experience.board.root)
     const scale = 1.3
 
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
         frame: 0,
@@ -165,7 +165,7 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animRot.setKeys([
       {
         frame: 0,
@@ -177,7 +177,7 @@ export class Card {
       },
     ])
 
-    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animScale.setKeys([
       {
         frame: 0,
@@ -189,14 +189,14 @@ export class Card {
       },
     ])
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, 10, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animDrop(pickedMesh: BABYLON.AbstractMesh) {
     this.root.setParent(this.experience.board.root)
     const scale = 1
 
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
         frame: 0,
@@ -208,7 +208,7 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animRot.setKeys([
       {
         frame: 0,
@@ -220,7 +220,7 @@ export class Card {
       },
     ])
 
-    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animScale.setKeys([
       {
         frame: 0,
@@ -232,11 +232,11 @@ export class Card {
       },
     ])
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, 10, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animToPrev() {
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
         frame: 0,
@@ -248,7 +248,7 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animRot.setKeys([
       {
         frame: 0,
@@ -260,6 +260,6 @@ export class Card {
       },
     ])
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, 10, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 }
