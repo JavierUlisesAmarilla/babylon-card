@@ -36,7 +36,8 @@ export class Cards {
         backTextureUrl: `assets/images/cards/(${i}).webp`,
         tweakTimeout: Math.max(Math.random() * 1500, 800),
         backTitle: CARD_TITLE_ARR[i].back,
-        frontTopTitle: CARD_TITLE_ARR[i].frontTop
+        frontTopTitle: CARD_TITLE_ARR[i].frontTop,
+        frontBottomTitle: CARD_TITLE_ARR[i].frontBottom
       })
       card.root.parent = this.root // Let's change the parent of the selected card while playing
       this.cardArr.push(card)
