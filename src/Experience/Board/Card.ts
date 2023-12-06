@@ -14,13 +14,13 @@ export class Card {
   drag
   highlight
   root
+  tweakTimeout
 
   isPointerDown = false
   isPicked = false
   prevPos = new BABYLON.Vector3()
   isAnimating = false
   lookQuat!: BABYLON.Quaternion | null
-  tweakTimeout = 1500
   tweakIntervalNum!: number
   hoverScale = 1.2
 
@@ -30,7 +30,8 @@ export class Card {
     height,
     position,
     frontTextureUrl,
-    backTextureUrl
+    backTextureUrl,
+    tweakTimeout = 1500
   }: {
     name: string
     width: number
@@ -38,6 +39,7 @@ export class Card {
     position: BABYLON.Vector3
     frontTextureUrl: string
     backTextureUrl: string
+    tweakTimeout?: number
   }) {
     this.name = name
     this.experience = new Experience()
@@ -48,6 +50,7 @@ export class Card {
     this.highlight = this.experience.highlight
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
+    this.tweakTimeout = tweakTimeout
 
     const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
     front.parent = this.root
@@ -204,7 +207,7 @@ export class Card {
   }
 
   getRandomLookQuat() {
-    const lookTarget = getRandomTarget(this.root.position, -1, 0.6)
+    const lookTarget = getRandomTarget(this.root.position, -1, 0.2)
     return getLookQuat(this.root.position, lookTarget)
   }
 

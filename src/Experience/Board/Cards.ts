@@ -32,7 +32,8 @@ export class Cards {
         height: this.cardHeight,
         position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (y - middleY) * (this.cardHeight + this.cardGap) - 0.25, -2),
         frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
-        backTextureUrl: `assets/images/cards/(${i}).webp`
+        backTextureUrl: `assets/images/cards/(${i}).webp`,
+        tweakTimeout: Math.max(Math.random() * 1500, 800),
       })
       card.root.parent = this.root // Let's change the parent of the selected card while playing
       this.cardArr.push(card)
