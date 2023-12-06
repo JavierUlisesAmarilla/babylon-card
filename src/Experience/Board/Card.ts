@@ -10,6 +10,7 @@ export class Card {
   scene
   gameState
   mouse
+  highlight
   root
 
   isPointerDown = false
@@ -38,6 +39,7 @@ export class Card {
     this.scene = this.experience.scene
     this.gameState = this.experience.gameState
     this.mouse = this.experience.mouse
+    this.highlight = this.experience.highlight
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
     this.root.rotation.y = Math.PI
@@ -56,6 +58,8 @@ export class Card {
     back.material = backMaterial
     back.position.z = GAP / 2
     back.rotation.y = Math.PI
+
+    this.highlight.addMeshes([front, back], BABYLON.Color3.Teal())
 
     this.mouse.on('pointerDown', async (root: BABYLON.Mesh) => {
       if (root.name === name && !this.isAnimating) {
