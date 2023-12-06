@@ -17,6 +17,7 @@ export class Card {
   root
   tweakTimeout
   backTitle
+  backText!: BABYLON.Mesh
 
   isPointerDown = false
   isPicked = false
@@ -86,6 +87,7 @@ export class Card {
           this.experience.board.cards.root.setEnabled(false)
           this.root.setParent(this.experience.board.root)
           await this.animSelect()
+          this.backText.dispose()
           this.gameState.step = 'play'
           break
         case 'play':
@@ -133,11 +135,14 @@ export class Card {
       const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.scene, earcut)
 
       if (backText) {
+        this.backText = backText
         backText.parent = this.root
         backText.position.y = -0.27
         backText.position.z = GAP
         backText.rotation.y = Math.PI
       }
+    } else {
+      this.backText.dispose()
     }
   }
 
