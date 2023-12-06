@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs'
+import * as earcut from 'earcut'
 
 import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
 import {getLookQuat, getRandomTarget} from '../../utils/common'
@@ -126,9 +127,17 @@ export class Card {
   }
 
   async reset() {
+    const fontData = await (await fetch('https://assets.babylonjs.com/fonts/Droid Sans_Regular.json')).json()
+
     if (this.backTitle) {
-      // TODO
-      console.log('test: ', this.backTitle)
+      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.scene, earcut)
+
+      if (backText) {
+        backText.parent = this.root
+        backText.position.y = -0.27
+        backText.position.z = GAP
+        backText.rotation.y = Math.PI
+      }
     }
   }
 

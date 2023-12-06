@@ -31,7 +31,7 @@ export class Cards {
         name: `card${i}`,
         width: this.cardWidth,
         height: this.cardHeight,
-        position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (y - middleY) * (this.cardHeight + this.cardGap) - 0.25, -2),
+        position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (middleY - y) * (this.cardHeight + this.cardGap) - 1, -2),
         frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
         backTextureUrl: `assets/images/cards/(${i}).webp`,
         tweakTimeout: Math.max(Math.random() * 1500, 800),

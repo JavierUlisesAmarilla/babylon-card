@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/earcut": "^2.1.4",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint": "^8.14.0",
@@ -15,6 +16,7 @@
     "vite": "^2.9.5"
   },
   "dependencies": {
-    "babylonjs": "^6.32.1"
+    "babylonjs": "^6.32.1",
+    "earcut": "^2.2.4"
   }
 }
