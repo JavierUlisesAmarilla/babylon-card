@@ -62,4 +62,8 @@ export class Board {
     // Cards
     this.cards = new Cards()
   }
+
+  update() {
+    this.cards.update()
+  }
 }

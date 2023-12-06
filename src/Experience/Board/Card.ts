@@ -20,7 +20,7 @@ export class Card {
   prevRot = new BABYLON.Vector3()
   isAnimating = false
   tweakTargetQuat!: BABYLON.Quaternion
-  tweakTimeout = 3000
+  tweakTimeout = 1500
   tweakIntervalNum!: number
 
   constructor({
@@ -46,7 +46,6 @@ export class Card {
     this.highlight = this.experience.highlight
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
-    this.root.rotation.y = Math.PI
 
     const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
     front.parent = this.root
@@ -268,12 +267,22 @@ export class Card {
     await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
+  getRandomTargetQuat() {
+    const target = getRandomTarget(this.root.position, -1, 0.6)
+    const lookAt = BABYLON.Matrix.LookAtLH(this.root.position, target, BABYLON.Vector3.Up()).invert()
+    return BABYLON.Quaternion.FromRotationMatrix(lookAt)
+  }
+
   tweak() {
+    this.root.rotationQuaternion = this.getRandomTargetQuat()
     this.tweakIntervalNum = setInterval(() => {
-      const target = getRandomTarget(this.root.position, -1, 0.6)
-      const lookAt = BABYLON.Matrix.LookAtLH(this.root.position, target, BABYLON.Vector3.Up()).invert()
-      this.tweakTargetQuat = BABYLON.Quaternion.FromRotationMatrix(lookAt)
-      this.root.rotationQuaternion = this.tweakTargetQuat
+      this.tweakTargetQuat = this.getRandomTargetQuat()
     }, this.tweakTimeout)
+  }
+
+  update() {
+    if (this.tweakTargetQuat && this.root.rotationQuaternion) {
+      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.tweakTargetQuat, 0.1)
+    }
   }
 }

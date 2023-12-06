@@ -13,6 +13,7 @@ export class Cards {
   cardWidth = 0.38
   cardHeight = 0.66
   cardGap = 0.1
+  cardArr: Card[] = []
 
   constructor() {
     this.experience = new Experience()
@@ -34,6 +35,13 @@ export class Cards {
         backTextureUrl: `assets/images/cards/(${i}).webp`
       })
       card.root.parent = this.root
+      this.cardArr.push(card)
     }
+  }
+
+  update() {
+    this.cardArr.forEach((card: Card) => {
+      card.update()
+    })
   }
 }

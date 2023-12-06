@@ -60,6 +60,7 @@ export class Experience {
 
   update() {
     this.scene?.render()
+    this.board.update()
   }
 
   resize() {
