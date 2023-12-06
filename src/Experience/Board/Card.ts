@@ -166,7 +166,7 @@ export class Card {
       },
     ])
 
-    const animScale = new BABYLON.Animation('animScale', 'scale', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
     animScale.setKeys([
       {
         frame: 0,
@@ -178,7 +178,7 @@ export class Card {
       },
     ])
 
-    this.root.animations = [animPos, animRot]
+    this.root.animations = [animPos, animRot, animScale]
     await this.scene.beginAnimation(this.root, 0, 10, false).waitAsync()
   }
 
@@ -210,7 +210,7 @@ export class Card {
       },
     ])
 
-    const animScale = new BABYLON.Animation('animScale', 'scale', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
+    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE)
     animScale.setKeys([
       {
         frame: 0,
@@ -222,7 +222,7 @@ export class Card {
       },
     ])
 
-    this.root.animations = [animPos, animRot]
+    this.root.animations = [animPos, animRot, animScale]
     await this.scene.beginAnimation(this.root, 0, 10, false).waitAsync()
   }
 
