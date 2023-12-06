@@ -40,8 +40,16 @@ export class Cards {
   }
 
   update() {
+    const pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY)
+    document.body.style.cursor = 'default'
+
     this.cardArr.forEach((card: Card) => {
       card.update()
+
+      // Hover
+      if (pickInfo?.pickedMesh?.name === card.name) {
+        document.body.style.cursor = 'pointer'
+      }
     })
   }
 }
