@@ -50,7 +50,6 @@ export class Experience {
     this.mouse = new Mouse()
     this.raycast = new Raycast()
     this.board = new Board()
-    this.mouse.dragPlane = this.board.root
 
     // Utils
     new BABYLON.Debug.AxesViewer(this.scene, 1)
