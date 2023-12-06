@@ -15,6 +15,7 @@ export class Card {
   highlight
   root
   tweakTimeout
+  backTitle
 
   isPointerDown = false
   isPicked = false
@@ -31,7 +32,8 @@ export class Card {
     position,
     frontTextureUrl,
     backTextureUrl,
-    tweakTimeout = 1500
+    tweakTimeout = 1500,
+    backTitle
   }: {
     name: string
     width: number
@@ -40,6 +42,7 @@ export class Card {
     frontTextureUrl: string
     backTextureUrl: string
     tweakTimeout?: number
+    backTitle?: string
   }) {
     this.name = name
     this.experience = new Experience()
@@ -51,6 +54,7 @@ export class Card {
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
     this.tweakTimeout = tweakTimeout
+    this.backTitle = backTitle
 
     const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
     front.parent = this.root
@@ -69,6 +73,7 @@ export class Card {
 
     this.highlight.addMeshes([front, back], BABYLON.Color3.Teal())
     this.tweak()
+    this.reset()
 
     this.drag.on('pointerDown', async (root: BABYLON.Mesh) => {
       if (root.name === name && !this.isAnimating) {
@@ -118,6 +123,13 @@ export class Card {
       this.isPointerDown = false
       this.isAnimating = false
     })
+  }
+
+  async reset() {
+    if (this.backTitle) {
+      // TODO
+      console.log('test: ', this.backTitle)
+    }
   }
 
   async animSelect() {

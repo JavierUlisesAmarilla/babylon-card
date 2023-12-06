@@ -4,3 +4,4 @@ export const LAYER_CARD_Z = -2 * GAP
 export const LAYER_PICK_Z = -0.3
 export const BOARD_ANGLE_FACTOR = 0.2
 export const MAX_ANIM_FRAME_TO = 100
+export const CARD_BACK_TITLE_ARR = ['Basic', 'Simple', 'Tame', 'Mild', 'Bold', 'Deep', 'Dicey', 'Hard', 'Grim', 'Dire']

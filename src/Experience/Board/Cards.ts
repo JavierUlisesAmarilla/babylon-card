@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs'
 
-import {BOARD_ANGLE_FACTOR} from '../../utils/constants'
+import { BOARD_ANGLE_FACTOR, CARD_BACK_TITLE_ARR } from '../../utils/constants'
+
 import {Card} from './Card'
 import {Experience} from '../Experience'
 
@@ -34,6 +35,7 @@ export class Cards {
         frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
         backTextureUrl: `assets/images/cards/(${i}).webp`,
         tweakTimeout: Math.max(Math.random() * 1500, 800),
+        backTitle: CARD_BACK_TITLE_ARR[i]
       })
       card.root.parent = this.root // Let's change the parent of the selected card while playing
       this.cardArr.push(card)
