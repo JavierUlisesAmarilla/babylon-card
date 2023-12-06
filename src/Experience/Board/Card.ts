@@ -146,8 +146,7 @@ export class Card {
       },
     ])
 
-    this.root.animations = [animPos, animRot]
-    await this.scene.beginAnimation(this.root, 0, 40, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, 40, false).waitAsync()
   }
 
   async animPick() {
@@ -190,8 +189,7 @@ export class Card {
       },
     ])
 
-    this.root.animations = [animPos, animRot, animScale]
-    await this.scene.beginAnimation(this.root, 0, 10, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, 10, false).waitAsync()
   }
 
   async animDrop(pickedMesh: BABYLON.AbstractMesh) {
@@ -234,8 +232,7 @@ export class Card {
       },
     ])
 
-    this.root.animations = [animPos, animRot, animScale]
-    await this.scene.beginAnimation(this.root, 0, 10, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, 10, false).waitAsync()
   }
 
   async animToPrev() {
@@ -263,7 +260,6 @@ export class Card {
       },
     ])
 
-    this.root.animations = [animPos, animRot]
-    await this.scene.beginAnimation(this.root, 0, 10, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, 10, false).waitAsync()
   }
 }
