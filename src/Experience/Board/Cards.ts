@@ -34,7 +34,7 @@ export class Cards {
         frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
         backTextureUrl: `assets/images/cards/(${i}).webp`
       })
-      card.root.parent = this.root
+      card.root.parent = this.root // Let's change the parent of the selected card while playing
       this.cardArr.push(card)
     }
   }

@@ -76,6 +76,7 @@ export class Card {
         case 'select':
           this.clearTweak()
           this.experience.board.cards.root.setEnabled(false)
+          this.root.setParent(this.experience.board.root)
           await this.animSelect()
           this.gameState.step = 'play'
           break
@@ -119,9 +120,7 @@ export class Card {
   }
 
   async animSelect() {
-    this.root.setParent(this.experience.board.root)
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
-
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
@@ -150,8 +149,6 @@ export class Card {
   }
 
   async animPick() {
-    this.root.setParent(this.experience.board.root)
-
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
@@ -180,8 +177,6 @@ export class Card {
   }
 
   async animDrop(pickedMesh: BABYLON.AbstractMesh) {
-    this.root.setParent(this.experience.board.root)
-
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
