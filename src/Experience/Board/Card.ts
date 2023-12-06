@@ -18,6 +18,8 @@ export class Card {
   tweakTimeout
   backTitle
   backText!: BABYLON.Mesh
+  frontTopTitle
+  frontTopText!: BABYLON.Mesh
 
   isPointerDown = false
   isPicked = false
@@ -35,7 +37,8 @@ export class Card {
     frontTextureUrl,
     backTextureUrl,
     tweakTimeout = 1500,
-    backTitle
+    backTitle,
+    frontTopTitle
   }: {
     name: string
     width: number
@@ -45,6 +48,7 @@ export class Card {
     backTextureUrl: string
     tweakTimeout?: number
     backTitle?: string
+    frontTopTitle?: string
   }) {
     this.name = name
     this.experience = new Experience()
@@ -57,6 +61,7 @@ export class Card {
     this.root.position.copyFrom(position)
     this.tweakTimeout = tweakTimeout
     this.backTitle = backTitle
+    this.frontTopTitle = frontTopTitle
 
     const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
     front.parent = this.root
@@ -143,6 +148,19 @@ export class Card {
       }
     } else {
       this.backText.dispose()
+    }
+
+    if (this.frontTopTitle) {
+      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.scene, earcut)
+
+      if (frontTopText) {
+        this.frontTopText = frontTopText
+        frontTopText.parent = this.root
+        frontTopText.position.y = 0.2
+        frontTopText.position.z = -GAP
+      }
+    } else {
+      this.frontTopText.dispose()
     }
   }
 
