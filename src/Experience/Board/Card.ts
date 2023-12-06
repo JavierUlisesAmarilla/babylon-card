@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO, MAX_DISTANCE} from '../../utils/constants'
 import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
@@ -142,19 +142,11 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animRot.setKeys([
-      {
-        frame: 0,
-        value: this.root.rotation
-      },
-      {
-        frame: 10,
-        value: new BABYLON.Vector3(0, Math.PI, 0)
-      },
-    ])
+    const lookTarget = this.root.position.clone()
+    lookTarget.z = -MAX_DISTANCE
+    this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animPick() {
@@ -246,8 +238,8 @@ export class Card {
   }
 
   getRandomLookQuat() {
-    const target = getRandomTarget(this.root.position, -1, 0.6)
-    return getLookQuat(this.root.position, target)
+    const lookTarget = getRandomTarget(this.root.position, -1, 0.6)
+    return getLookQuat(this.root.position, lookTarget)
   }
 
   tweak() {
