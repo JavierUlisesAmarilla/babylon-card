@@ -6,6 +6,7 @@ import {Experience} from '../Experience'
 import {getRandomTarget} from '../../utils/common'
 
 export class Card {
+  name
   experience
   slotPicker
   scene
@@ -22,6 +23,7 @@ export class Card {
   tweakTargetQuat!: BABYLON.Quaternion | null
   tweakTimeout = 1500
   tweakIntervalNum!: number
+  hoverScale = 1.2
 
   constructor({
     name, // Should be unique
@@ -38,6 +40,7 @@ export class Card {
     frontTextureUrl: string
     backTextureUrl: string
   }) {
+    this.name = name
     this.experience = new Experience()
     this.slotPicker = this.experience.slotPicker
     this.scene = this.experience.scene
@@ -156,7 +159,6 @@ export class Card {
 
   async animPick() {
     this.root.setParent(this.experience.board.root)
-    const scale = 1.3
 
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
@@ -182,24 +184,11 @@ export class Card {
       },
     ])
 
-    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animScale.setKeys([
-      {
-        frame: 0,
-        value: this.root.scaling
-      },
-      {
-        frame: 10,
-        value: new BABYLON.Vector3(scale, scale, scale)
-      },
-    ])
-
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animDrop(pickedMesh: BABYLON.AbstractMesh) {
     this.root.setParent(this.experience.board.root)
-    const scale = 1
 
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
@@ -225,19 +214,7 @@ export class Card {
       },
     ])
 
-    const animScale = new BABYLON.Animation('animScale', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animScale.setKeys([
-      {
-        frame: 0,
-        value: this.root.scaling
-      },
-      {
-        frame: 10,
-        value: new BABYLON.Vector3(scale, scale, scale)
-      },
-    ])
-
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot, animScale], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animToPrev() {
@@ -289,6 +266,19 @@ export class Card {
   update() {
     if (this.tweakTargetQuat && this.root.rotationQuaternion) {
       this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.tweakTargetQuat, 0.1)
+    }
+
+    // Hover
+    const pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY)
+
+    if (pickInfo?.pickedMesh?.name === this.name) {
+      if (this.gameState.step === 'select') {
+        const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(this.hoverScale, this.hoverScale, this.hoverScale), 0.05)
+        this.root.scaling.copyFrom(lerpScale)
+      }
+    } else {
+      const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(1, 1, 1), 0.05)
+      this.root.scaling.copyFrom(lerpScale)
     }
   }
 }
