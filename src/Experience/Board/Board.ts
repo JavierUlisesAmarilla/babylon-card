@@ -12,8 +12,6 @@ export class Board {
   scene
   mouse
   root
-  topSlots
-  bottomSlots
   topLeftSlot
   topRightSlot
   bottomLeftSlot
@@ -42,27 +40,21 @@ export class Board {
     this.mouse.dragPlane = layerPick
 
     // Top slots
-    this.topSlots = new BABYLON.TransformNode('topSlots')
-    this.topSlots.parent = this.root
-    this.topSlots.position.set(-1.16, 0.1, LAYER_SLOT_Z)
-
     for (let i = 0; i < 10; i++) {
       const x = i % 5
       const y = Math.floor(i / 5)
-      const slot = new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, x, y})
-      slot.root.parent = this.topSlots
+      const position = new BABYLON.Vector3(x * this.slotWidth + this.slotWidth / 2 - 1.16, y * this.slotHeight + this.slotHeight / 2 + 0.1, LAYER_SLOT_Z)
+      const slot = new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
+      slot.root.parent = this.root
     }
 
     // Bottom slots
-    this.bottomSlots = new BABYLON.TransformNode('bottomSlots')
-    this.bottomSlots.parent = this.root
-    this.bottomSlots.position.set(-1.16, -1.64, LAYER_SLOT_Z)
-
     for (let i = 0; i < 10; i++) {
       const x = i % 5
       const y = Math.floor(i / 5)
-      const slot = new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, x, y})
-      slot.root.parent = this.bottomSlots
+      const position = new BABYLON.Vector3(x * this.slotWidth + this.slotWidth / 2 - 1.16, y * this.slotHeight + this.slotHeight / 2 - 1.64, LAYER_SLOT_Z)
+      const slot = new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
+      slot.root.parent = this.root
     }
 
     // Side slots

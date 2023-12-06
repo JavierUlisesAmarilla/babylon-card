@@ -6,6 +6,7 @@ import {Experience} from '../Experience'
 
 export class Card {
   experience
+  raycast
   scene
   gameState
   mouse
@@ -14,6 +15,8 @@ export class Card {
 
   isPointerDown = false
   isPicked = false
+  prevPos = new BABYLON.Vector3()
+  prevRot = new BABYLON.Vector3()
 
   constructor({
     name, // Should be unique
@@ -29,6 +32,7 @@ export class Card {
     backTextureUrl: string
   }) {
     this.experience = new Experience()
+    this.raycast = this.experience.raycast
     this.scene = this.experience.scene
     this.gameState = this.experience.gameState
     this.mouse = this.experience.mouse
@@ -36,7 +40,7 @@ export class Card {
     this.root.position.copyFrom(position)
     this.root.rotation.y = Math.PI
 
-    this.back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    this.back = BABYLON.MeshBuilder.CreatePlane(name, {width, height, sideOrientation: 2}, this.scene)
     this.back.parent = this.root
     const material = new BABYLON.StandardMaterial(name)
     material.diffuseTexture = new BABYLON.Texture(backTextureUrl)
@@ -54,6 +58,8 @@ export class Card {
           break
         case 'play':
           if (this.isPicked) {
+            this.prevPos.copyFrom(this.root.position)
+            this.prevRot.copyFrom(this.root.rotation)
             this.isPointerDown = true
           } else {
             this.animPick()
@@ -72,7 +78,13 @@ export class Card {
 
     this.mouse.on('pointerUp', () => {
       if (this.isPointerDown) {
-        console.log('TODO')
+        const pickedMesh = this.raycast.getPickedMesh()
+
+        if (pickedMesh) {
+          this.animDrop(pickedMesh)
+        } else {
+          this.animToPrev()
+        }
       }
 
       this.isPointerDown = false
@@ -92,5 +104,18 @@ export class Card {
     this.root.rotation.set(Math.PI * BOARD_ANGLE_FACTOR, Math.PI, 0)
     const scale = 1.3
     this.root.scaling.set(scale, scale, scale)
+  }
+
+  animDrop(pickedMesh: BABYLON.AbstractMesh) {
+    this.root.setParent(this.experience.board.root)
+    this.root.position.set(pickedMesh.position.x, pickedMesh.position.y, LAYER_CARD_Z)
+    this.root.rotation.copyFrom(pickedMesh.rotation)
+    const scale = 1
+    this.root.scaling.set(scale, scale, scale)
+  }
+
+  animToPrev() {
+    this.root.position.copyFrom(this.prevPos)
+    this.root.rotation.copyFrom(this.prevRot)
   }
 }

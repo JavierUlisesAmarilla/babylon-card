@@ -5,6 +5,7 @@ import {BOARD_ANGLE_FACTOR} from '../utils/constants'
 import {Board} from './Board/Board'
 import {GameState} from './Utils/GameState'
 import {Mouse} from './Utils/Mouse'
+import {Raycast} from './Utils/Raycast'
 
 let instance: Experience
 
@@ -17,6 +18,7 @@ export class Experience {
 
   gameState!: GameState
   mouse!: Mouse
+  raycast!: Raycast
   board!: Board
 
   constructor() {
@@ -46,6 +48,7 @@ export class Experience {
     // Assets
     this.gameState = new GameState()
     this.mouse = new Mouse()
+    this.raycast = new Raycast()
     this.board = new Board()
     this.mouse.dragPlane = this.board.root
 
