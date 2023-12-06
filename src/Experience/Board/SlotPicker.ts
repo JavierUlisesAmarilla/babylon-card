@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
-import {EventEmitter} from './EventEmitter'
+import {EventEmitter} from '../Utils/EventEmitter'
 import {Experience} from '../Experience'
 
-export class Raycast extends EventEmitter {
+export class SlotPicker extends EventEmitter {
   experience
   scene
 

@@ -7,7 +7,7 @@ import {getRandomTarget} from '../../utils/common'
 
 export class Card {
   experience
-  raycast
+  slotPicker
   scene
   gameState
   drag
@@ -39,7 +39,7 @@ export class Card {
     backTextureUrl: string
   }) {
     this.experience = new Experience()
-    this.raycast = this.experience.raycast
+    this.slotPicker = this.experience.slotPicker
     this.scene = this.experience.scene
     this.gameState = this.experience.gameState
     this.drag = this.experience.drag
@@ -101,7 +101,7 @@ export class Card {
     this.drag.on('pointerUp', async () => {
       if (this.isPointerDown && !this.isAnimating) {
         this.isAnimating = true
-        const pickedMesh = this.raycast.getPickedMesh()
+        const pickedMesh = this.slotPicker.getPickedMesh()
 
         if (pickedMesh) {
           await this.animDrop(pickedMesh)

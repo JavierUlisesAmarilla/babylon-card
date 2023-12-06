@@ -6,7 +6,7 @@ import {Board} from './Board/Board'
 import {Drag} from './Utils/Drag'
 import {GameState} from './Utils/GameState'
 import {Highlight} from './Utils/Highlight'
-import {Raycast} from './Utils/Raycast'
+import {SlotPicker} from './Board/SlotPicker'
 
 let instance: Experience
 
@@ -19,7 +19,7 @@ export class Experience {
 
   gameState!: GameState
   drag!: Drag
-  raycast!: Raycast
+  slotPicker!: SlotPicker
   highlight!: Highlight
   board!: Board
 
@@ -50,7 +50,7 @@ export class Experience {
     // Assets
     this.gameState = new GameState()
     this.drag = new Drag()
-    this.raycast = new Raycast()
+    this.slotPicker = new SlotPicker()
     this.highlight = new Highlight()
     this.board = new Board()
 
