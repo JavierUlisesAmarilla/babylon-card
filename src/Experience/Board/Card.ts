@@ -1,9 +1,9 @@
 import * as BABYLON from 'babylonjs'
 
 import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
+import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
-import {getRandomTarget} from '../../utils/common'
 
 export class Card {
   name
@@ -20,7 +20,7 @@ export class Card {
   prevPos = new BABYLON.Vector3()
   prevRot = new BABYLON.Vector3()
   isAnimating = false
-  tweakTargetQuat!: BABYLON.Quaternion | null
+  lookQuat!: BABYLON.Quaternion | null
   tweakTimeout = 1500
   tweakIntervalNum!: number
   hoverScale = 1.2
@@ -245,27 +245,26 @@ export class Card {
     await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
-  getRandomTargetQuat() {
+  getRandomLookQuat() {
     const target = getRandomTarget(this.root.position, -1, 0.6)
-    const lookAt = BABYLON.Matrix.LookAtLH(this.root.position, target, BABYLON.Vector3.Up()).invert()
-    return BABYLON.Quaternion.FromRotationMatrix(lookAt)
+    return getLookQuat(this.root.position, target)
   }
 
   tweak() {
-    this.root.rotationQuaternion = this.getRandomTargetQuat()
+    this.root.rotationQuaternion = this.getRandomLookQuat()
     this.tweakIntervalNum = setInterval(() => {
-      this.tweakTargetQuat = this.getRandomTargetQuat()
+      this.lookQuat = this.getRandomLookQuat()
     }, this.tweakTimeout)
   }
 
   clearTweak() {
     clearInterval(this.tweakIntervalNum)
-    this.tweakTargetQuat = null
+    this.lookQuat = null
   }
 
   update() {
-    if (this.tweakTargetQuat && this.root.rotationQuaternion) {
-      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.tweakTargetQuat, 0.1)
+    if (this.lookQuat && this.root.rotationQuaternion) {
+      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.lookQuat, 0.1)
     }
 
     // Hover
