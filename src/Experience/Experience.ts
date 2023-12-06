@@ -36,8 +36,9 @@ export class Experience {
     this.engine = new BABYLON.Engine(this.canvas, true)
     this.scene = new BABYLON.Scene(this.engine)
     this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI * (0.5 + BOARD_ANGLE_FACTOR), 5, new BABYLON.Vector3(0, 0, 0))
-    this.camera.attachControl(this.canvas, true)
-    this.hemisphericLight = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 0, -1), this.scene)
+    // this.camera.attachControl(this.canvas, true)
+    this.camera.target = new BABYLON.Vector3(0, -0.7, 0)
+    this.hemisphericLight = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(-1, -1, -1), this.scene)
 
     this.engine.runRenderLoop(() => {
       instance.update()

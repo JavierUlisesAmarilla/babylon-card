@@ -67,7 +67,7 @@ export class Drag extends EventEmitter {
 
   onPointerUp() {
     if (this.startingPoint) {
-      this.camera.attachControl(this.canvas, true)
+      // this.camera.attachControl(this.canvas, true)
       this.startingPoint = null
       this.trigger('pointerUp')
     }

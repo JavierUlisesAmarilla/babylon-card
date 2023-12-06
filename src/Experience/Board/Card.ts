@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO, MAX_DISTANCE} from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
 import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
@@ -18,7 +18,6 @@ export class Card {
   isPointerDown = false
   isPicked = false
   prevPos = new BABYLON.Vector3()
-  prevRot = new BABYLON.Vector3()
   isAnimating = false
   lookQuat!: BABYLON.Quaternion | null
   tweakTimeout = 1500
@@ -83,7 +82,6 @@ export class Card {
         case 'play':
           if (this.isPicked) {
             this.prevPos.copyFrom(this.root.position)
-            this.prevRot.copyFrom(this.root.rotation)
             this.isPointerDown = true
           } else {
             await this.animPick()
@@ -121,7 +119,7 @@ export class Card {
 
   async animSelect() {
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
+    const animPos = new BABYLON.Animation(this.name, 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
         frame: 0,
@@ -142,14 +140,14 @@ export class Card {
     ])
 
     const lookTarget = this.root.position.clone()
-    lookTarget.z = -MAX_DISTANCE
+    lookTarget.z -= 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
     await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animPick() {
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
+    const animPos = new BABYLON.Animation(this.name, 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
         frame: 0,
@@ -157,23 +155,16 @@ export class Card {
       },
       {
         frame: 10,
-        value: new BABYLON.Vector3(0, -1.55, LAYER_PICK_Z)
+        value: new BABYLON.Vector3(0, -2.1, LAYER_PICK_Z)
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animRot.setKeys([
-      {
-        frame: 0,
-        value: this.root.rotation
-      },
-      {
-        frame: 10,
-        value: new BABYLON.Vector3(-Math.PI * BOARD_ANGLE_FACTOR, 0, 0)
-      },
-    ])
+    const lookTarget = this.root.position.clone()
+    lookTarget.y += 10 * BOARD_ANGLE_FACTOR * 2
+    lookTarget.z += 10
+    this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animDrop(pickedMesh: BABYLON.AbstractMesh) {
@@ -189,19 +180,11 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animRot.setKeys([
-      {
-        frame: 0,
-        value: this.root.rotation
-      },
-      {
-        frame: 10,
-        value: pickedMesh.rotation
-      },
-    ])
+    const lookTarget = this.root.position.clone()
+    lookTarget.z += 1
+    this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   async animToPrev() {
@@ -217,19 +200,7 @@ export class Card {
       },
     ])
 
-    const animRot = new BABYLON.Animation('animRot', 'rotation', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animRot.setKeys([
-      {
-        frame: 0,
-        value: this.root.rotation
-      },
-      {
-        frame: 10,
-        value: this.prevRot
-      },
-    ])
-
-    await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
   }
 
   getRandomLookQuat() {
@@ -251,7 +222,7 @@ export class Card {
 
   update() {
     if (this.lookQuat && this.root.rotationQuaternion) {
-      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.lookQuat, 0.1)
+      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.lookQuat, 0.2)
     }
 
     // Hover
