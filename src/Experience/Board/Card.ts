@@ -78,7 +78,7 @@ export class Card {
     back.position.z = GAP / 2
     back.rotation.y = Math.PI
 
-    this.highlight.addMeshes([front, back], BABYLON.Color3.Teal())
+    this.highlight.addMeshes([front, back], BABYLON.Color3.Yellow())
     this.tweak()
     this.reset()
 
