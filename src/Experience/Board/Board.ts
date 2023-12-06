@@ -10,7 +10,7 @@ import {Slot} from './Slot'
 export class Board {
   experience
   scene
-  mouse
+  drag
   root
   topLeftSlot
   topRightSlot
@@ -25,7 +25,7 @@ export class Board {
   constructor() {
     this.experience = new Experience()
     this.scene = this.experience.scene
-    this.mouse = this.experience.mouse
+    this.drag = this.experience.drag
     this.root = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size, sideOrientation: 2}, this.scene)
     const material = new BABYLON.StandardMaterial('board')
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
@@ -35,7 +35,7 @@ export class Board {
     const layerPick = BABYLON.MeshBuilder.CreatePlane('layerPick', {width: this.size, height: this.size}, this.scene)
     layerPick.setEnabled(false)
     layerPick.position.set(0, 0, LAYER_PICK_Z)
-    this.mouse.dragPlane = layerPick
+    this.drag.dragPlane = layerPick
 
     // Top slots
     for (let i = 0; i < 10; i++) {

@@ -3,7 +3,7 @@ import * as BABYLON from 'babylonjs'
 import {EventEmitter} from './EventEmitter'
 import {Experience} from '../Experience'
 
-export class Mouse extends EventEmitter {
+export class Drag extends EventEmitter {
   experience
   canvas
   scene

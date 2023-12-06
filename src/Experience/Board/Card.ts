@@ -10,7 +10,7 @@ export class Card {
   raycast
   scene
   gameState
-  mouse
+  drag
   highlight
   root
 
@@ -42,7 +42,7 @@ export class Card {
     this.raycast = this.experience.raycast
     this.scene = this.experience.scene
     this.gameState = this.experience.gameState
-    this.mouse = this.experience.mouse
+    this.drag = this.experience.drag
     this.highlight = this.experience.highlight
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
@@ -65,7 +65,7 @@ export class Card {
     this.highlight.addMeshes([front, back], BABYLON.Color3.Teal())
     this.tweak()
 
-    this.mouse.on('pointerDown', async (root: BABYLON.Mesh) => {
+    this.drag.on('pointerDown', async (root: BABYLON.Mesh) => {
       if (root.name === name && !this.isAnimating) {
         this.isAnimating = true
 
@@ -92,13 +92,13 @@ export class Card {
       }
     })
 
-    this.mouse.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
+    this.drag.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
       if (root.name === name && this.isPointerDown && this.gameState.step === 'play') {
         this.root.position.addInPlace(diff)
       }
     })
 
-    this.mouse.on('pointerUp', async () => {
+    this.drag.on('pointerUp', async () => {
       if (this.isPointerDown && !this.isAnimating) {
         this.isAnimating = true
         const pickedMesh = this.raycast.getPickedMesh()

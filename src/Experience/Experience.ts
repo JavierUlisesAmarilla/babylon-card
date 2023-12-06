@@ -3,9 +3,9 @@ import * as BABYLON from 'babylonjs'
 
 import {BOARD_ANGLE_FACTOR} from '../utils/constants'
 import {Board} from './Board/Board'
+import {Drag} from './Utils/Drag'
 import {GameState} from './Utils/GameState'
 import {Highlight} from './Utils/Highlight'
-import {Mouse} from './Utils/Mouse'
 import {Raycast} from './Utils/Raycast'
 
 let instance: Experience
@@ -18,7 +18,7 @@ export class Experience {
   hemisphericLight!: BABYLON.HemisphericLight
 
   gameState!: GameState
-  mouse!: Mouse
+  drag!: Drag
   raycast!: Raycast
   highlight!: Highlight
   board!: Board
@@ -49,7 +49,7 @@ export class Experience {
 
     // Assets
     this.gameState = new GameState()
-    this.mouse = new Mouse()
+    this.drag = new Drag()
     this.raycast = new Raycast()
     this.highlight = new Highlight()
     this.board = new Board()
