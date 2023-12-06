@@ -23,12 +23,14 @@ export class Card {
     width,
     height,
     position,
+    frontTextureUrl,
     backTextureUrl
   }: {
     name: string
     width: number
     height: number
     position: BABYLON.Vector3
+    frontTextureUrl: string
     backTextureUrl: string
   }) {
     this.experience = new Experience()
@@ -40,11 +42,18 @@ export class Card {
     this.root.position.copyFrom(position)
     this.root.rotation.y = Math.PI
 
-    const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height, sideOrientation: 2}, this.scene)
+    const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    front.parent = this.root
+    const frontMaterial = new BABYLON.StandardMaterial(name)
+    frontMaterial.diffuseTexture = new BABYLON.Texture(frontTextureUrl)
+    front.material = frontMaterial
+    front.position.z = -GAP / 2
+
+    const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
     back.parent = this.root
-    const material = new BABYLON.StandardMaterial(name)
-    material.diffuseTexture = new BABYLON.Texture(backTextureUrl)
-    back.material = material
+    const backMaterial = new BABYLON.StandardMaterial(name)
+    backMaterial.diffuseTexture = new BABYLON.Texture(backTextureUrl)
+    back.material = backMaterial
     back.position.z = GAP / 2
     back.rotation.y = Math.PI
 

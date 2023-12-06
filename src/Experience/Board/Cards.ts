@@ -32,6 +32,7 @@ export class Cards {
         width: this.cardWidth,
         height: this.cardHeight,
         position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (y - middleY) * (this.cardHeight + this.cardGap), 0),
+        frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
         backTextureUrl: `assets/images/cards/(${i}).webp`
       })
       card.root.parent = this.root
