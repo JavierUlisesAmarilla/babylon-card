@@ -3,6 +3,7 @@ import * as BABYLON from 'babylonjs'
 import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
 
 import {Experience} from '../Experience'
+import {getRandomTarget} from '../../utils/common'
 
 export class Card {
   experience
@@ -18,6 +19,9 @@ export class Card {
   prevPos = new BABYLON.Vector3()
   prevRot = new BABYLON.Vector3()
   isAnimating = false
+  tweakTargetQuat!: BABYLON.Quaternion
+  tweakTimeout = 3000
+  tweakIntervalNum!: number
 
   constructor({
     name, // Should be unique
@@ -60,6 +64,7 @@ export class Card {
     back.rotation.y = Math.PI
 
     this.highlight.addMeshes([front, back], BABYLON.Color3.Teal())
+    this.tweak()
 
     this.mouse.on('pointerDown', async (root: BABYLON.Mesh) => {
       if (root.name === name && !this.isAnimating) {
@@ -261,5 +266,14 @@ export class Card {
     ])
 
     await this.scene.beginDirectAnimation(this.root, [animPos, animRot], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+  }
+
+  tweak() {
+    this.tweakIntervalNum = setInterval(() => {
+      const target = getRandomTarget(this.root.position, -1, 0.6)
+      const lookAt = BABYLON.Matrix.LookAtLH(this.root.position, target, BABYLON.Vector3.Up()).invert()
+      this.tweakTargetQuat = BABYLON.Quaternion.FromRotationMatrix(lookAt)
+      this.root.rotationQuaternion = this.tweakTargetQuat
+    }, this.tweakTimeout)
   }
 }

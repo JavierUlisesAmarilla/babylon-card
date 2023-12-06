@@ -26,15 +26,13 @@ export class Board {
     this.experience = new Experience()
     this.scene = this.experience.scene
     this.mouse = this.experience.mouse
-    this.root = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size}, this.scene)
+    this.root = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size, sideOrientation: 2}, this.scene)
     const material = new BABYLON.StandardMaterial('board')
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
     this.root.material = material
-    this.root.position.set(0, 0.8, 0)
 
     // Pick layer
     const layerPick = BABYLON.MeshBuilder.CreatePlane('layerPick', {width: this.size, height: this.size}, this.scene)
-    layerPick.parent = this.root
     layerPick.setEnabled(false)
     layerPick.position.set(0, 0, LAYER_PICK_Z)
     this.mouse.dragPlane = layerPick
@@ -44,8 +42,7 @@ export class Board {
       const x = i % 5
       const y = Math.floor(i / 5)
       const position = new BABYLON.Vector3(x * this.slotWidth + this.slotWidth / 2 - 1.16, y * this.slotHeight + this.slotHeight / 2 + 0.1, LAYER_SLOT_Z)
-      const slot = new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
-      slot.root.parent = this.root
+      new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
     }
 
     // Bottom slots
@@ -53,19 +50,14 @@ export class Board {
       const x = i % 5
       const y = Math.floor(i / 5)
       const position = new BABYLON.Vector3(x * this.slotWidth + this.slotWidth / 2 - 1.16, y * this.slotHeight + this.slotHeight / 2 - 1.64, LAYER_SLOT_Z)
-      const slot = new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
-      slot.root.parent = this.root
+      new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
     }
 
     // Side slots
     this.topLeftSlot = new EmptySlot({name: 'topLeftSlot', width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(-1.2 - this.slotWidth / 2, 0.9, LAYER_SLOT_Z)})
-    this.topLeftSlot.root.parent = this.root
     this.topRightSlot = new EmptySlot({name: 'topLeftSlot', width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(1.24 + this.slotWidth / 2, 0.9, LAYER_SLOT_Z)})
-    this.topRightSlot.root.parent = this.root
     this.bottomLeftSlot = new EmptySlot({name: 'topLeftSlot', width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(-1.2 - this.slotWidth / 2, -0.9, LAYER_SLOT_Z)})
-    this.bottomLeftSlot.root.parent = this.root
     this.bottomRightSlot = new EmptySlot({name: 'topLeftSlot', width: this.slotWidth, height: this.slotHeight, position: new BABYLON.Vector3(1.24 + this.slotWidth / 2, -0.9, LAYER_SLOT_Z)})
-    this.bottomRightSlot.root.parent = this.root
 
     // Cards
     this.cards = new Cards()

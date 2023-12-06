@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import { BOARD_ANGLE_FACTOR } from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR} from '../../utils/constants'
 import {Card} from './Card'
 import {Experience} from '../Experience'
 
@@ -17,9 +17,7 @@ export class Cards {
   constructor() {
     this.experience = new Experience()
     this.scene = this.experience.scene
-
     this.root = new BABYLON.TransformNode('cards')
-    this.root.position.set(0, -1.3, -2)
     this.root.rotation.x = -Math.PI * BOARD_ANGLE_FACTOR
     const middleX = 2
     const middleY = 1
@@ -31,7 +29,7 @@ export class Cards {
         name: `card${i}`,
         width: this.cardWidth,
         height: this.cardHeight,
-        position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (y - middleY) * (this.cardHeight + this.cardGap), 0),
+        position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (y - middleY) * (this.cardHeight + this.cardGap), -2),
         frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
         backTextureUrl: `assets/images/cards/(${i}).webp`
       })
