@@ -19,7 +19,7 @@ export class Card {
   prevPos = new BABYLON.Vector3()
   prevRot = new BABYLON.Vector3()
   isAnimating = false
-  tweakTargetQuat!: BABYLON.Quaternion
+  tweakTargetQuat!: BABYLON.Quaternion | null
   tweakTimeout = 1500
   tweakIntervalNum!: number
 
@@ -71,6 +71,7 @@ export class Card {
 
         switch (this.gameState.step) {
         case 'select':
+          this.clearTweak()
           this.experience.board.cards.root.setEnabled(false)
           await this.animSelect()
           this.gameState.step = 'play'
@@ -122,15 +123,15 @@ export class Card {
     animPos.setKeys([
       {
         frame: 0,
-        value: this.root.position.clone()
+        value: this.root.position
       },
       {
         frame: 10,
-        value: new BABYLON.Vector3(0, -3, -3)
+        value: new BABYLON.Vector3(0, -2.2, -3)
       },
       {
         frame: 20,
-        value: new BABYLON.Vector3(0, -3, -3)
+        value: new BABYLON.Vector3(0, -2.2, -3)
       },
       {
         frame: 40,
@@ -142,7 +143,7 @@ export class Card {
     animRot.setKeys([
       {
         frame: 0,
-        value: this.root.rotation.clone()
+        value: this.root.rotation
       },
       {
         frame: 10,
@@ -161,11 +162,11 @@ export class Card {
     animPos.setKeys([
       {
         frame: 0,
-        value: this.root.position.clone()
+        value: this.root.position
       },
       {
         frame: 10,
-        value: new BABYLON.Vector3(0, -2.35, LAYER_PICK_Z)
+        value: new BABYLON.Vector3(0, -1.55, LAYER_PICK_Z)
       },
     ])
 
@@ -173,7 +174,7 @@ export class Card {
     animRot.setKeys([
       {
         frame: 0,
-        value: this.root.rotation.clone()
+        value: this.root.rotation
       },
       {
         frame: 10,
@@ -185,7 +186,7 @@ export class Card {
     animScale.setKeys([
       {
         frame: 0,
-        value: this.root.scaling.clone()
+        value: this.root.scaling
       },
       {
         frame: 10,
@@ -204,7 +205,7 @@ export class Card {
     animPos.setKeys([
       {
         frame: 0,
-        value: this.root.position.clone()
+        value: this.root.position
       },
       {
         frame: 10,
@@ -216,11 +217,11 @@ export class Card {
     animRot.setKeys([
       {
         frame: 0,
-        value: this.root.rotation.clone()
+        value: this.root.rotation
       },
       {
         frame: 10,
-        value: pickedMesh.rotation.clone()
+        value: pickedMesh.rotation
       },
     ])
 
@@ -228,7 +229,7 @@ export class Card {
     animScale.setKeys([
       {
         frame: 0,
-        value: this.root.scaling.clone()
+        value: this.root.scaling
       },
       {
         frame: 10,
@@ -244,11 +245,11 @@ export class Card {
     animPos.setKeys([
       {
         frame: 0,
-        value: this.root.position.clone()
+        value: this.root.position
       },
       {
         frame: 10,
-        value: this.prevPos.clone()
+        value: this.prevPos
       },
     ])
 
@@ -256,11 +257,11 @@ export class Card {
     animRot.setKeys([
       {
         frame: 0,
-        value: this.root.rotation.clone()
+        value: this.root.rotation
       },
       {
         frame: 10,
-        value: this.prevRot.clone()
+        value: this.prevRot
       },
     ])
 
@@ -278,6 +279,11 @@ export class Card {
     this.tweakIntervalNum = setInterval(() => {
       this.tweakTargetQuat = this.getRandomTargetQuat()
     }, this.tweakTimeout)
+  }
+
+  clearTweak() {
+    clearInterval(this.tweakIntervalNum)
+    this.tweakTargetQuat = null
   }
 
   update() {
