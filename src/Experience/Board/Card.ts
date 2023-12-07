@@ -246,7 +246,7 @@ export class Card {
         value: this.root.position
       },
       {
-        frame: 10,
+        frame: 5,
         value: new BABYLON.Vector3(pickedMesh.position.x, pickedMesh.position.y, LAYER_CARD_Z)
       },
     ])
