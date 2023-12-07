@@ -29,7 +29,7 @@ export class Card {
   isAnimating = false
   lookQuat!: BABYLON.Quaternion | null
   tweakIntervalNum!: number
-  hoverScale = 1.2
+  hoverScale = 1.1
 
   constructor({
     name, // Should be unique
@@ -301,11 +301,11 @@ export class Card {
 
     if (pickInfo?.pickedMesh?.name === this.name) {
       if (this.gameState.step === 'select') {
-        const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(this.hoverScale, this.hoverScale, this.hoverScale), 0.05)
+        const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(this.hoverScale, this.hoverScale, this.hoverScale), 0.5)
         this.root.scaling.copyFrom(lerpScale)
       }
     } else {
-      const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(1, 1, 1), 0.05)
+      const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(1, 1, 1), 0.5)
       this.root.scaling.copyFrom(lerpScale)
     }
   }
