@@ -5,6 +5,7 @@ import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} 
 import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
+import {addGhostlyGlowSpriteTo} from '../../utils/add-on'
 
 export class Card {
   name
@@ -83,7 +84,20 @@ export class Card {
     back.position.z = GAP / 2
     back.rotation.y = Math.PI
 
-    this.highlight.addMeshes([front, back], BABYLON.Color3.Yellow())
+    const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
+    frontGlow.setEnabled(true)
+    frontGlow.applyTextureSizeToGeometry(frontGlow.baseTexture)
+    frontGlow.visibility = 0.5
+    frontGlow.rotation.y = Math.PI
+    frontGlow.scaling.set(0.067,0.085,1)
+
+    const backGlow = addGhostlyGlowSpriteTo(this.root, '#00FF00')
+    backGlow.setEnabled(true)
+    backGlow.applyTextureSizeToGeometry(backGlow.baseTexture)
+    backGlow.visibility = 0.5
+    backGlow.scaling.set(0.067,0.085,1)
+
+    // this.highlight.addMeshes([front, back], BABYLON.Color3.Yellow())
     this.tweak()
     this.reset()
 
@@ -293,7 +307,7 @@ export class Card {
 
   update() {
     if (this.lookQuat && this.root.rotationQuaternion) {
-      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.lookQuat, 0.2)
+      this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.lookQuat, 0.15)
     }
 
     // Hover
