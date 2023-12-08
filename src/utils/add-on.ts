@@ -239,7 +239,6 @@ function createPlasmaGlowMaterial(scene: Scene, hexColor: string) {
 
 export function addGhostlyGlowSpriteTo(parent: TransformNode, hexColor: string) {
   const sprite = createPlane3D('assets/images/plasma/glow1.webp', {name: 'glow', parent})
-  console.log('test: addGhostlyGlowSpriteTo: parent: ', parent)
   const material = createPlasmaGlowMaterial(parent.getScene(), hexColor)
   sprite.material = material
   sprite.applyTextureSizeToGeometry(material.baseTexture)
