@@ -89,13 +89,13 @@ export class Card {
     frontGlow.applyTextureSizeToGeometry(frontGlow.baseTexture)
     frontGlow.visibility = 0.5
     frontGlow.rotation.y = Math.PI
-    frontGlow.scaling.set(0.067,0.085,1)
+    frontGlow.scaling.set(0.18 * width, 0.13 * height, 1)
 
     const backGlow = addGhostlyGlowSpriteTo(this.root, '#00FF00')
     backGlow.setEnabled(true)
     backGlow.applyTextureSizeToGeometry(backGlow.baseTexture)
     backGlow.visibility = 0.5
-    backGlow.scaling.set(0.067,0.085,1)
+    backGlow.scaling.set(0.18 * width, 0.13 * height, 1)
 
     // this.highlight.addMeshes([front, back], BABYLON.Color3.Yellow())
     this.tweak()
@@ -315,11 +315,11 @@ export class Card {
 
     if (pickInfo?.pickedMesh?.name === this.name) {
       if (this.gameState.step === 'select') {
-        const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(this.hoverScale, this.hoverScale, this.hoverScale), 0.5)
+        const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(this.hoverScale, this.hoverScale, this.hoverScale), 0.3)
         this.root.scaling.copyFrom(lerpScale)
       }
     } else {
-      const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(1, 1, 1), 0.5)
+      const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(1, 1, 1), 0.3)
       this.root.scaling.copyFrom(lerpScale)
     }
   }
