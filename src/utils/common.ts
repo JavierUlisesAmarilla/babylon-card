@@ -31,3 +31,8 @@ export const waitForTextureReady = (texture: BABYLON.Texture) => {
     }
   })
 }
+
+export const delay = (s: number) => {
+  if (s <= 0) return Promise.resolve()
+  return new Promise((resolve) => setTimeout(resolve, s * 1e3))
+}

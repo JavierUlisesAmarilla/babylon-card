@@ -41,7 +41,7 @@ export class Board {
       const x = i % 5
       const y = Math.floor(i / 5)
       const position = new BABYLON.Vector3(x * this.slotWidth + this.slotWidth / 2 - 1.16, y * this.slotHeight + this.slotHeight / 2 + 0.1, LAYER_SLOT_Z)
-      new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
+      new Slot({name: `t-slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
     }
 
     // Bottom slots
@@ -49,7 +49,7 @@ export class Board {
       const x = i % 5
       const y = Math.floor(i / 5)
       const position = new BABYLON.Vector3(x * this.slotWidth + this.slotWidth / 2 - 1.16, y * this.slotHeight + this.slotHeight / 2 - 1.64, LAYER_SLOT_Z)
-      new Slot({name: `slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
+      new Slot({name: `b-slot${i}`, width: this.slotWidth, height: this.slotHeight, position})
     }
 
     // Side slots

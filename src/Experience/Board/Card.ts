@@ -161,7 +161,15 @@ export class Card {
         const pickedMesh = this.experience.slotPicker.getPickedMesh()
 
         if (pickedMesh) {
-          await this.onDrop(pickedMesh)
+          const prefixName = pickedMesh.name.substring(0, 6)
+
+          if (prefixName === 'b-slot') {
+            await this.onDrop(pickedMesh)
+          }
+
+          if (prefixName === 't-slot') {
+            await this.onAttack(pickedMesh)
+          }
         } else {
           await this.onPrev()
         }
@@ -304,6 +312,14 @@ export class Card {
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
       .to(this.frontBorderGlow, {visibility: 0, duration: 0.2})
       .to(this.hoverGlow, {visibility: 0, duration: 0.2})
+  }
+
+  async onAttack(pickedMesh: BABYLON.AbstractMesh) {
+    await this.onPrev()
+    const {x, y, z} = pickedMesh.position
+    await gsap.timeline()
+      .to(this.root.position, {x, y, z: z - GAP, duration: 0.1, ease: EASE_STRING})
+      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration: 0.1, ease: EASE_STRING})
   }
 
   getRandomLookQuat() {
