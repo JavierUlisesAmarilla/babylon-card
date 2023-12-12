@@ -156,7 +156,7 @@ function createPlane3D(textureURL: string, mods: any = null, size = 1) {
       waitUntilTextureLoaded() {
         const texture = material.diffuseTexture
         if (!texture) {
-          console.warn('No diffuse texture')
+          console.warn('no diffuse texture')
           return Promise.resolve()
         }
         return waitForTextureReady(texture)

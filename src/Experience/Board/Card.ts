@@ -6,15 +6,11 @@ import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
 import {addGhostlyGlowSpriteTo} from '../../utils/add-on'
+import gsap from 'gsap'
 
 export class Card {
   name
   experience
-  slotPicker
-  scene
-  gameState
-  drag
-  highlight
   root
   tweakTimeout
   backTitle
@@ -23,14 +19,13 @@ export class Card {
   frontTopText!: BABYLON.Mesh
   frontBottomTitle
   frontBottomText!: BABYLON.Mesh
-
   isPointerDown = false
-  isPicked = false
   prevPos = new BABYLON.Vector3()
   isAnimating = false
   lookQuat!: BABYLON.Quaternion | null
-  tweakIntervalNum!: number
+  tweakIntervalIndex!: number
   hoverScale = 1.1
+  curStep = 'level' // level, side, bottom, lay
 
   constructor({
     name, // Should be unique
@@ -57,11 +52,6 @@ export class Card {
   }) {
     this.name = name
     this.experience = new Experience()
-    this.slotPicker = this.experience.slotPicker
-    this.scene = this.experience.scene
-    this.gameState = this.experience.gameState
-    this.drag = this.experience.drag
-    this.highlight = this.experience.highlight
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
     this.tweakTimeout = tweakTimeout
@@ -69,20 +59,12 @@ export class Card {
     this.frontTopTitle = frontTopTitle
     this.frontBottomTitle = frontBottomTitle
 
-    const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
     front.parent = this.root
     const frontMaterial = new BABYLON.StandardMaterial(name)
     frontMaterial.diffuseTexture = new BABYLON.Texture(frontTextureUrl)
     front.material = frontMaterial
     front.position.z = -GAP / 2
-
-    const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
-    back.parent = this.root
-    const backMaterial = new BABYLON.StandardMaterial(name)
-    backMaterial.diffuseTexture = new BABYLON.Texture(backTextureUrl)
-    back.material = backMaterial
-    back.position.z = GAP / 2
-    back.rotation.y = Math.PI
 
     const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
     frontGlow.setEnabled(true)
@@ -91,37 +73,42 @@ export class Card {
     frontGlow.rotation.y = Math.PI
     frontGlow.scaling.set(0.18 * width, 0.13 * height, 1)
 
+    front.actionManager = new BABYLON.ActionManager(this.experience.scene)
+    front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
+    front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOutTrigger}, () => this.onPointerOut()))
+
+    const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
+    back.parent = this.root
+    const backMaterial = new BABYLON.StandardMaterial(name)
+    backMaterial.diffuseTexture = new BABYLON.Texture(backTextureUrl)
+    back.material = backMaterial
+    back.position.z = GAP / 2
+    back.rotation.y = Math.PI
+
     const backGlow = addGhostlyGlowSpriteTo(this.root, '#00FF00')
     backGlow.setEnabled(true)
     backGlow.applyTextureSizeToGeometry(backGlow.baseTexture)
     backGlow.visibility = 0.5
     backGlow.scaling.set(0.18 * width, 0.13 * height, 1)
 
-    // this.highlight.addMeshes([front, back], BABYLON.Color3.Yellow())
     this.tweak()
     this.reset()
 
-    this.drag.on('pointerDown', async (root: BABYLON.Mesh) => {
+    this.experience.drag.on('pointerDown', async (root: BABYLON.Mesh) => {
       if (root.name === name && !this.isAnimating) {
         this.isAnimating = true
+        this.isPointerDown = true
 
-        switch (this.gameState.step) {
-        case 'select':
-          this.clearTweak()
-          this.experience.board.cards.root.setEnabled(false)
-          this.root.setParent(this.experience.board.root)
-          await this.animSelect()
-          this.backText.dispose()
-          this.gameState.step = 'play'
+        switch (this.curStep) {
+        case 'level':
+          await this.onSelectLevel()
           break
-        case 'play':
-          if (this.isPicked) {
-            this.prevPos.copyFrom(this.root.position)
-            this.isPointerDown = true
-          } else {
-            await this.animPick()
-            this.isPicked = true
-          }
+        case 'side':
+          await this.onPickFromSide()
+          break
+        case 'bottom':
+        case 'lay':
+          this.prevPos.copyFrom(this.root.position)
           break
         }
 
@@ -129,21 +116,21 @@ export class Card {
       }
     })
 
-    this.drag.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
-      if (root.name === name && this.isPointerDown && this.gameState.step === 'play') {
+    this.experience.drag.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
+      if (root.name === name && this.isPointerDown && (this.curStep === 'bottom' || this.curStep === 'lay')) {
         this.root.position.addInPlace(diff)
       }
     })
 
-    this.drag.on('pointerUp', async () => {
+    this.experience.drag.on('pointerUp', async () => {
       if (this.isPointerDown && !this.isAnimating) {
         this.isAnimating = true
-        const pickedMesh = this.slotPicker.getPickedMesh()
+        const pickedMesh = this.experience.slotPicker.getPickedMesh()
 
         if (pickedMesh) {
-          await this.animDrop(pickedMesh)
+          await this.onDrop(pickedMesh)
         } else {
-          await this.animToPrev()
+          await this.onPrev()
         }
       }
 
@@ -156,7 +143,7 @@ export class Card {
     const fontData = await (await fetch('https://assets.babylonjs.com/fonts/Droid Sans_Regular.json')).json()
 
     if (this.backTitle) {
-      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.scene, earcut)
+      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.experience.scene, earcut)
 
       if (backText) {
         this.backText = backText
@@ -172,7 +159,7 @@ export class Card {
     }
 
     if (this.frontTopTitle) {
-      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.scene, earcut)
+      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.experience.scene, earcut)
 
       if (frontTopText) {
         this.frontTopText = frontTopText
@@ -187,7 +174,7 @@ export class Card {
     }
 
     if (this.frontBottomTitle) {
-      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01}, this.scene, earcut)
+      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01}, this.experience.scene, earcut)
 
       if (frontBottomText) {
         this.frontBottomText = frontBottomText
@@ -202,7 +189,11 @@ export class Card {
     }
   }
 
-  async animSelect() {
+  async onSelectLevel() {
+    this.clearTweak()
+    this.experience.board.cards.root.setEnabled(false)
+    this.root.setParent(this.experience.board.root)
+
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     const animPos = new BABYLON.Animation(this.name, 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
@@ -228,10 +219,13 @@ export class Card {
     lookTarget.z -= 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+
+    this.backText.dispose()
+    this.curStep = 'side'
   }
 
-  async animPick() {
+  async onPickFromSide() {
     const animPos = new BABYLON.Animation(this.name, 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
@@ -249,10 +243,12 @@ export class Card {
     lookTarget.z += 10
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+
+    this.curStep = 'bottom'
   }
 
-  async animDrop(pickedMesh: BABYLON.AbstractMesh) {
+  async onDrop(pickedMesh: BABYLON.AbstractMesh) {
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
@@ -269,10 +265,12 @@ export class Card {
     lookTarget.z += 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+
+    this.curStep = 'lay'
   }
 
-  async animToPrev() {
+  async onPrev() {
     const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
     animPos.setKeys([
       {
@@ -285,7 +283,17 @@ export class Card {
       },
     ])
 
-    await this.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+  }
+
+  onPointerOver() {
+    if (this.curStep === 'level' || this.curStep === 'bottom') {
+      gsap.timeline().to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
+    }
+  }
+
+  onPointerOut() {
+    gsap.timeline().to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
   }
 
   getRandomLookQuat() {
@@ -295,32 +303,19 @@ export class Card {
 
   tweak() {
     this.root.rotationQuaternion = this.getRandomLookQuat()
-    this.tweakIntervalNum = setInterval(() => {
+    this.tweakIntervalIndex = setInterval(() => {
       this.lookQuat = this.getRandomLookQuat()
     }, this.tweakTimeout)
   }
 
   clearTweak() {
-    clearInterval(this.tweakIntervalNum)
+    clearInterval(this.tweakIntervalIndex)
     this.lookQuat = null
   }
 
   update() {
     if (this.lookQuat && this.root.rotationQuaternion) {
       this.root.rotationQuaternion = BABYLON.Quaternion.Slerp(this.root.rotationQuaternion, this.lookQuat, 0.15)
-    }
-
-    // Hover
-    const pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY)
-
-    if (pickInfo?.pickedMesh?.name === this.name) {
-      if (this.gameState.step === 'select') {
-        const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(this.hoverScale, this.hoverScale, this.hoverScale), 0.3)
-        this.root.scaling.copyFrom(lerpScale)
-      }
-    } else {
-      const lerpScale = BABYLON.Vector3.Lerp(this.root.scaling, new BABYLON.Vector3(1, 1, 1), 0.3)
-      this.root.scaling.copyFrom(lerpScale)
     }
   }
 }

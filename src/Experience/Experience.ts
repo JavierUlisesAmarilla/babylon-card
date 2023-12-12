@@ -4,7 +4,6 @@ import * as BABYLON from 'babylonjs'
 import {BOARD_ANGLE_FACTOR} from '../utils/constants'
 import {Board} from './Board/Board'
 import {Drag} from './Utils/Drag'
-import {GameState} from './Utils/GameState'
 import {Highlight} from './Utils/Highlight'
 import {SlotPicker} from './Board/SlotPicker'
 
@@ -17,7 +16,6 @@ export class Experience {
   camera!: BABYLON.ArcRotateCamera
   hemisphericLight!: BABYLON.HemisphericLight
 
-  gameState!: GameState
   drag!: Drag
   slotPicker!: SlotPicker
   highlight!: Highlight
@@ -49,7 +47,6 @@ export class Experience {
     })
 
     // Assets
-    this.gameState = new GameState()
     this.drag = new Drag()
     this.slotPicker = new SlotPicker()
     this.highlight = new Highlight()
