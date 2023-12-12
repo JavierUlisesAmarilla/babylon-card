@@ -219,8 +219,7 @@ export class Card {
   }
 
   async onSelectLevel() {
-    const spriteUrl = 'https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json'
-    const fx = AnimatedSprite.fromAtlasJsonURL(spriteUrl, 30, 100, this.experience.scene)
+    const fx = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json', 30, 100, this.experience.scene)
     fx.playAndDispose()
     fx.isPickable = false
     fx.renderingGroupId = 1
@@ -228,7 +227,7 @@ export class Card {
     fx.rotation.y = Math.PI
     fx.scaling.setAll(0.5)
     fx.parent = this.root
-    fx.material.alphaMode = BABYLON.Engine.ALPHA_ADD
+    if (fx.material) fx.material.alphaMode = BABYLON.Engine.ALPHA_ADD
     fx.color = BABYLON.Color3.FromHexString('#2090f0')
 
     this.clearTweak()
