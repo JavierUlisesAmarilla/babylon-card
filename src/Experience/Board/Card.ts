@@ -89,7 +89,7 @@ export class Card {
     this.frontBorderGlow.setEnabled(true)
     this.frontBorderGlow.applyTextureSizeToGeometry(this.frontBorderGlow.baseTexture)
     this.frontBorderGlow.visibility = 0
-    this.frontBorderGlow.intensity = 20
+    this.frontBorderGlow.intensity = 30
     this.frontBorderGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
