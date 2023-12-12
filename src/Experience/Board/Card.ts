@@ -222,7 +222,7 @@ export class Card {
     const zoomInTarget = [0, -2.2, -3]
     await gsap.timeline()
       .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
-      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
+      .to(this.hoverGlow, {visibility: 0, duration: 0.3, ease: EASE_STRING})
       .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration: 0.5, ease: EASE_STRING})
 
     this.backText.dispose()
