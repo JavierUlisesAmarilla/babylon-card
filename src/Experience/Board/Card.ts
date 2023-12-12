@@ -30,7 +30,8 @@ export class Card {
   curStep = 'level' // level, side, bottom, lay
   frontGlow
   frontBorderGlow
-  hoverGlow
+  frontHoverGlow
+  backHoverGlow
 
   constructor({
     name, // Should be unique
@@ -94,6 +95,13 @@ export class Card {
     this.frontBorderGlow.intensity = 20
     this.frontBorderGlow.scaling.set(0.18 * width, 0.135 * height, 1)
 
+    this.frontHoverGlow = createPlane3D('assets/images/plasma/glow3.webp', {name, parent: this.root})
+    this.frontHoverGlow.position.z = -GAP
+    this.frontHoverGlow.scaling.set(0.18 * width, 0.135 * height, 1)
+    this.frontHoverGlow.setTintColor(new BABYLON.Color3(0.1, 0.4, 0.9))
+    this.frontHoverGlow.setAdditiveBlendMode()
+    this.frontHoverGlow.visibility = 0
+
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOutTrigger}, () => this.onPointerOut()))
@@ -115,14 +123,13 @@ export class Card {
     backGlow.rotation.y = Math.PI
     backGlow.scaling.set(0.18 * width, 0.135 * height, 1)
 
-    // Hover glow
-    this.hoverGlow = createPlane3D('assets/images/plasma/glow3.webp', {name, parent: this.root})
-    this.hoverGlow.position.z = GAP
-    this.hoverGlow.rotation.y = Math.PI
-    this.hoverGlow.scaling.set(0.18 * width, 0.135 * height, 1)
-    this.hoverGlow.setTintColor(new BABYLON.Color3(0.1, 0.4, 0.9))
-    this.hoverGlow.setAdditiveBlendMode()
-    this.hoverGlow.visibility = 0
+    this.backHoverGlow = createPlane3D('assets/images/plasma/glow3.webp', {name, parent: this.root})
+    this.backHoverGlow.position.z = GAP
+    this.backHoverGlow.rotation.y = Math.PI
+    this.backHoverGlow.scaling.set(0.18 * width, 0.135 * height, 1)
+    this.backHoverGlow.setTintColor(new BABYLON.Color3(0.1, 0.4, 0.9))
+    this.backHoverGlow.setAdditiveBlendMode()
+    this.backHoverGlow.visibility = 0
 
     this.tweak()
     this.reset()
@@ -262,7 +269,7 @@ export class Card {
     await delay(duration)
 
     await gsap.timeline()
-      .to(this.hoverGlow, {visibility: 0, duration, ease})
+      .to(this.backHoverGlow, {visibility: 0, duration, ease})
       .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration, ease}, 0)
       .to(this.backText, {visibility: 0, duration, ease}, 0)
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration, ease}, 0)
@@ -307,6 +314,8 @@ export class Card {
       .to(this.frontBorderGlow, {visibility: 0, duration, ease}, 0)
       .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration: 0.5, ease}, 0)
       .to(this.root.position, {z: LAYER_CARD_Z, duration: 0.1 * duration, ease}, duration)
+      .to(this.frontHoverGlow, {visibility: 1, duration: 0.3 * duration, ease}, duration)
+      .to(this.frontHoverGlow, {visibility: 0, duration: 0.3 * duration, ease})
 
     dust.playAndDispose()
 
@@ -321,7 +330,7 @@ export class Card {
   async onPointerOver() {
     if (this.curStep === 'level' || this.curStep === 'bottom') {
       await gsap.timeline()
-        .to(this.hoverGlow, {visibility: 0.3, duration: 0.1})
+        .to(this.backHoverGlow, {visibility: 0.3, duration: 0.1})
         .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2}, 0)
         .to(this.frontBorderGlow, {visibility: 1, duration: 0.2}, 0)
     }
@@ -331,7 +340,7 @@ export class Card {
     await gsap.timeline()
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
       .to(this.frontBorderGlow, {visibility: 0, duration: 0.2}, 0)
-      .to(this.hoverGlow, {visibility: 0, duration: 0.2}, 0)
+      .to(this.backHoverGlow, {visibility: 0, duration: 0.2}, 0)
   }
 
   async onAttack(pickedMesh: BABYLON.AbstractMesh) {
