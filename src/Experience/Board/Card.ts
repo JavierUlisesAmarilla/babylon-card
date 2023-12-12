@@ -2,10 +2,10 @@ import * as BABYLON from 'babylonjs'
 import * as earcut from 'earcut'
 
 import {BOARD_ANGLE_FACTOR, EASE_STRING, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
+import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
 import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
-import {addGhostlyGlowSpriteTo} from '../../utils/add-on'
 import gsap from 'gsap'
 
 export class Card {
@@ -26,6 +26,7 @@ export class Card {
   tweakIntervalIndex!: number
   hoverScale = 1.1
   curStep = 'level' // level, side, bottom, lay
+  hoverGlow
 
   constructor({
     name, // Should be unique
@@ -59,6 +60,15 @@ export class Card {
     this.frontTopTitle = frontTopTitle
     this.frontBottomTitle = frontBottomTitle
 
+    // Border
+    const border = BABYLON.MeshBuilder.CreatePlane(name, {width, height, sideOrientation: 2}, this.experience.scene)
+    border.parent = this.root
+    const borderMaterial = new BABYLON.StandardMaterial(name)
+    borderMaterial.diffuseTexture = new BABYLON.Texture('assets/images/border.webp')
+    border.material = borderMaterial
+    border.scaling.set(1.2, 1.14, 1)
+
+    // Front
     const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
     front.parent = this.root
     const frontMaterial = new BABYLON.StandardMaterial(name)
@@ -69,14 +79,14 @@ export class Card {
     const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
     frontGlow.setEnabled(true)
     frontGlow.applyTextureSizeToGeometry(frontGlow.baseTexture)
-    frontGlow.visibility = 0.5
-    frontGlow.rotation.y = Math.PI
-    frontGlow.scaling.set(0.18 * width, 0.13 * height, 1)
+    frontGlow.visibility = 1
+    frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOutTrigger}, () => this.onPointerOut()))
 
+    // Back
     const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
     back.parent = this.root
     const backMaterial = new BABYLON.StandardMaterial(name)
@@ -88,8 +98,18 @@ export class Card {
     const backGlow = addGhostlyGlowSpriteTo(this.root, '#00FF00')
     backGlow.setEnabled(true)
     backGlow.applyTextureSizeToGeometry(backGlow.baseTexture)
-    backGlow.visibility = 0.5
-    backGlow.scaling.set(0.18 * width, 0.13 * height, 1)
+    backGlow.visibility = 1
+    backGlow.rotation.y = Math.PI
+    backGlow.scaling.set(0.2 * width, 0.14 * height, 1)
+
+    // Hover glow
+    this.hoverGlow = createPlane3D('assets/images/plasma/glow3.webp', {name, parent: this.root})
+    this.hoverGlow.position.z = GAP
+    this.hoverGlow.rotation.y = Math.PI
+    this.hoverGlow.scaling.set(0.076, 0.092, 1)
+    this.hoverGlow.setTintColor(new BABYLON.Color3(0.1, 0.4, 0.9))
+    this.hoverGlow.setAdditiveBlendMode()
+    this.hoverGlow.visibility = 0
 
     this.tweak()
     this.reset()
@@ -143,7 +163,7 @@ export class Card {
     const fontData = await (await fetch('https://assets.babylonjs.com/fonts/Droid Sans_Regular.json')).json()
 
     if (this.backTitle) {
-      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.experience.scene, earcut)
+      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(0, 1, 0, 1)]}, this.experience.scene, earcut)
 
       if (backText) {
         this.backText = backText
@@ -159,7 +179,7 @@ export class Card {
     }
 
     if (this.frontTopTitle) {
-      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01}, this.experience.scene, earcut)
+      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontTopText) {
         this.frontTopText = frontTopText
@@ -174,7 +194,7 @@ export class Card {
     }
 
     if (this.frontBottomTitle) {
-      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01}, this.experience.scene, earcut)
+      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontBottomText) {
         this.frontBottomText = frontBottomText
@@ -236,12 +256,16 @@ export class Card {
 
   async onPointerOver() {
     if (this.curStep === 'level' || this.curStep === 'bottom') {
-      await gsap.timeline().to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
+      await gsap.timeline()
+        .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
+        .to(this.hoverGlow, {visibility: 1, duration: 0.2})
     }
   }
 
   async onPointerOut() {
-    await gsap.timeline().to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
+    await gsap.timeline()
+      .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
+      .to(this.hoverGlow, {visibility: 0, duration: 0.2})
   }
 
   getRandomLookQuat() {

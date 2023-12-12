@@ -88,7 +88,7 @@ function waitForTextureReady(texture: Texture) {
   })
 }
 
-function createPlane3D(textureURL: string, mods: any = null, size = 1) {
+export function createPlane3D(textureURL: string, mods: any = null, size = 1) {
   mods ?? (mods = {})
   const name2 = mods.name ?? generateRandomString(12)
   const mesh = Object.assign(MeshBuilder.CreatePlane(name2, {width: 1, height: 1, size}), {color: Color3.White()})
@@ -227,7 +227,7 @@ function createPlasmaGlowMaterial(scene: Scene, hexColor: string) {
   shaderMaterial.setTexture('noiseTexture', noiseTexture)
   shaderMaterial.setColor4('color', Color3.FromHexString(hexColor).toColor4())
   shaderMaterial.setVector3('speed', new Vector3(0.09, 0.06, 0.03).scale(-1))
-  shaderMaterial.setFloat('intensity', 150)
+  shaderMaterial.setFloat('intensity', 50)
   shaderMaterial.alphaMode = Engine.ALPHA_ADD
   const randomTimeOffset = Math.random() * 1e3
   const oef = () => shaderMaterial.setFloat('time', randomTimeOffset + performance.now() * 1e-3)

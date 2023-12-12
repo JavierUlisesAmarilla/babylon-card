@@ -11,7 +11,7 @@ export class Cards {
   size = 10
   cardWidth = 0.38
   cardHeight = 0.66
-  cardGap = 0.2
+  cardGap = 0.3
   cardArr: Card[] = []
 
   constructor() {
