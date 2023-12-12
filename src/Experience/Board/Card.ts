@@ -27,6 +27,7 @@ export class Card {
   tweakIntervalIndex!: number
   hoverScale = 1.1
   curStep = 'level' // level, side, bottom, lay
+  frontGlow
   frontBorderGlow
   hoverGlow
 
@@ -78,11 +79,11 @@ export class Card {
     front.material = frontMaterial
     front.position.z = -GAP / 2
 
-    const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
-    frontGlow.setEnabled(true)
-    frontGlow.applyTextureSizeToGeometry(frontGlow.baseTexture)
-    frontGlow.visibility = 1
-    frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
+    this.frontGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
+    this.frontGlow.setEnabled(true)
+    this.frontGlow.applyTextureSizeToGeometry(this.frontGlow.baseTexture)
+    this.frontGlow.visibility = 1
+    this.frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
     this.frontBorderGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
     this.frontBorderGlow.setEnabled(true)
@@ -228,7 +229,7 @@ export class Card {
     fx.scaling.setAll(0.5)
     fx.parent = this.root
     if (fx.material) fx.material.alphaMode = BABYLON.Engine.ALPHA_ADD
-    fx.color = BABYLON.Color3.FromHexString('#2090f0')
+    fx.color = BABYLON.Color3.FromHexString('#209f0f0')
 
     this.clearTweak()
     this.root.setParent(this.experience.board.root)
@@ -265,7 +266,10 @@ export class Card {
     lookTarget.z += 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await gsap.timeline().to(this.root.position, {x: pickedMesh.position.x, y: pickedMesh.position.y, z: LAYER_CARD_Z, duration: 0.1, ease: EASE_STRING})
+    await gsap.timeline()
+      .to(this.root.position, {x: pickedMesh.position.x, y: pickedMesh.position.y, z: LAYER_CARD_Z, duration: 0.1, ease: EASE_STRING})
+      .to(this.frontGlow, {visibility: 0, duration: 0, ease: EASE_STRING})
+      .to(this.frontBorderGlow, {visibility: 0, duration: 0, ease: EASE_STRING})
 
     this.curStep = 'lay'
   }
