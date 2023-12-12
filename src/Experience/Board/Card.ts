@@ -77,16 +77,17 @@ export class Card {
     front.material = frontMaterial
     front.position.z = -GAP / 2
 
-    const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
+    const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
     frontGlow.setEnabled(true)
     frontGlow.applyTextureSizeToGeometry(frontGlow.baseTexture)
     frontGlow.visibility = 1
     frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
-    this.frontBorderGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
+    this.frontBorderGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
     this.frontBorderGlow.setEnabled(true)
     this.frontBorderGlow.applyTextureSizeToGeometry(this.frontBorderGlow.baseTexture)
     this.frontBorderGlow.visibility = 0
+    this.frontBorderGlow.intensity = 20
     this.frontBorderGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
@@ -186,7 +187,7 @@ export class Card {
     }
 
     if (this.frontTopTitle) {
-      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
+      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 1, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontTopText) {
         this.frontTopText = frontTopText
@@ -201,7 +202,7 @@ export class Card {
     }
 
     if (this.frontBottomTitle) {
-      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
+      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 1, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontBottomText) {
         this.frontBottomText = frontBottomText
