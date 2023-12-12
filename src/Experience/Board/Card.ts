@@ -190,6 +190,10 @@ export class Card {
   async reset() {
     const fontData = await (await fetch('https://assets.babylonjs.com/fonts/Droid Sans_Regular.json')).json()
 
+    if (this.backText) {
+      this.backText.dispose()
+    }
+
     if (this.backTitle) {
       const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(0, 1, 0, 1)]}, this.experience.scene, earcut)
 
@@ -200,10 +204,10 @@ export class Card {
         backText.position.z = GAP
         backText.rotation.y = Math.PI
       }
-    } else {
-      if (this.backText) {
-        this.backText.dispose()
-      }
+    }
+
+    if (this.frontTopText) {
+      this.frontTopText.dispose()
     }
 
     if (this.frontTopTitle) {
@@ -216,10 +220,10 @@ export class Card {
         frontTopText.position.z = -GAP
         frontTopText.visibility = 0
       }
-    } else {
-      if (this.frontTopText) {
-        this.frontTopText.dispose()
-      }
+    }
+
+    if (this.frontBottomText) {
+      this.frontBottomText.dispose()
     }
 
     if (this.frontBottomTitle) {
@@ -231,10 +235,6 @@ export class Card {
         frontBottomText.position.y = -0.27
         frontBottomText.position.z = -GAP
         frontBottomText.visibility = 0
-      }
-    } else {
-      if (this.frontBottomText) {
-        this.frontBottomText.dispose()
       }
     }
   }
