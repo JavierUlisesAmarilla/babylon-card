@@ -21,6 +21,7 @@ export class Card {
   frontTopText!: BABYLON.Mesh
   frontBottomTitle
   frontBottomText!: BABYLON.Mesh
+  frontHoverText!: BABYLON.Mesh
   isPointerDown = false
   prevPos = new BABYLON.Vector3()
   isAnimating = false
@@ -190,6 +191,7 @@ export class Card {
   async reset() {
     const fontData = await (await fetch('https://assets.babylonjs.com/fonts/Droid Sans_Regular.json')).json()
 
+    // Back text
     if (this.backText) {
       this.backText.dispose()
     }
@@ -206,6 +208,7 @@ export class Card {
       }
     }
 
+    // Front top text
     if (this.frontTopText) {
       this.frontTopText.dispose()
     }
@@ -222,6 +225,7 @@ export class Card {
       }
     }
 
+    // Front bottom text
     if (this.frontBottomText) {
       this.frontBottomText.dispose()
     }
@@ -235,6 +239,23 @@ export class Card {
         frontBottomText.position.y = -0.27
         frontBottomText.position.z = -GAP
         frontBottomText.visibility = 0
+      }
+    }
+
+    // Front hover text
+    if (this.frontHoverText) {
+      this.frontHoverText.dispose()
+    }
+
+    if (this.frontBottomTitle) {
+      const frontHoverText = BABYLON.MeshBuilder.CreateText(this.name, 'Hover', fontData, {size: 0.05, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
+
+      if (frontHoverText) {
+        this.frontHoverText = frontHoverText
+        frontHoverText.parent = this.root
+        frontHoverText.position.y = 0
+        frontHoverText.position.z = -GAP
+        frontHoverText.visibility = 0
       }
     }
   }
