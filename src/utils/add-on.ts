@@ -255,6 +255,11 @@ export function addGhostlyGlowSpriteTo(parent: TransformNode, hexColor: string) 
       get() {
         return _color.toHexString()
       }
+    },
+    intensity: {
+      set(value) {
+        material.setFloat('intensity', value)
+      },
     }
   })
 }

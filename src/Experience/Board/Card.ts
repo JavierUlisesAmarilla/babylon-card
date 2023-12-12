@@ -26,6 +26,7 @@ export class Card {
   tweakIntervalIndex!: number
   hoverScale = 1.1
   curStep = 'level' // level, side, bottom, lay
+  frontGlow
   hoverGlow
 
   constructor({
@@ -76,11 +77,11 @@ export class Card {
     front.material = frontMaterial
     front.position.z = -GAP / 2
 
-    const frontGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
-    frontGlow.setEnabled(true)
-    frontGlow.applyTextureSizeToGeometry(frontGlow.baseTexture)
-    frontGlow.visibility = 1
-    frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
+    this.frontGlow = addGhostlyGlowSpriteTo(this.root, '#FF0000')
+    this.frontGlow.setEnabled(true)
+    this.frontGlow.applyTextureSizeToGeometry(this.frontGlow.baseTexture)
+    this.frontGlow.visibility = 1
+    this.frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
@@ -258,13 +259,15 @@ export class Card {
     if (this.curStep === 'level' || this.curStep === 'bottom') {
       await gsap.timeline()
         .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
-        .to(this.hoverGlow, {visibility: 1, duration: 0.2})
+        .to(this.frontGlow, {intensity: 100, duration: 0.2})
+        .to(this.hoverGlow, {visibility: 0.5, duration: 0.2})
     }
   }
 
   async onPointerOut() {
     await gsap.timeline()
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
+      .to(this.frontGlow, {intensity: 50, duration: 0.2})
       .to(this.hoverGlow, {visibility: 0, duration: 0.2})
   }
 
