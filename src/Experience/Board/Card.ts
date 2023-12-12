@@ -79,17 +79,18 @@ export class Card {
     front.material = frontMaterial
     front.position.z = -GAP / 2
 
-    this.frontGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
+    this.frontGlow = addGhostlyGlowSpriteTo(this.root, '#FFD700')
     this.frontGlow.setEnabled(true)
     this.frontGlow.applyTextureSizeToGeometry(this.frontGlow.baseTexture)
     this.frontGlow.visibility = 1
+    this.frontGlow.intensity = 20
     this.frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
-    this.frontBorderGlow = addGhostlyGlowSpriteTo(this.root, '#FFFF00')
+    this.frontBorderGlow = addGhostlyGlowSpriteTo(this.root, '#FFD700')
     this.frontBorderGlow.setEnabled(true)
     this.frontBorderGlow.applyTextureSizeToGeometry(this.frontBorderGlow.baseTexture)
     this.frontBorderGlow.visibility = 0
-    this.frontBorderGlow.intensity = 30
+    this.frontBorderGlow.intensity = 20
     this.frontBorderGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
@@ -109,6 +110,7 @@ export class Card {
     backGlow.setEnabled(true)
     backGlow.applyTextureSizeToGeometry(backGlow.baseTexture)
     backGlow.visibility = 1
+    backGlow.intensity = 20
     backGlow.rotation.y = Math.PI
     backGlow.scaling.set(0.2 * width, 0.14 * height, 1)
 
