@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 import * as earcut from 'earcut'
 
-import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, TEXT_DEPTH} from '../../utils/constants'
 import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
 import {delay, getLookQuat, getRandomTarget} from '../../utils/common'
 
@@ -197,7 +197,7 @@ export class Card {
     }
 
     if (this.backTitle) {
-      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(0, 1, 0, 1)]}, this.experience.scene, earcut)
+      const backText = BABYLON.MeshBuilder.CreateText(this.name, this.backTitle, fontData, {size: 0.07, resolution: 64, depth: TEXT_DEPTH, faceColors: [new BABYLON.Color4(0, 1, 0, 1)]}, this.experience.scene, earcut)
 
       if (backText) {
         this.backText = backText
@@ -214,7 +214,7 @@ export class Card {
     }
 
     if (this.frontTopTitle) {
-      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 1, 0, 1)]}, this.experience.scene, earcut)
+      const frontTopText = BABYLON.MeshBuilder.CreateText(this.name, this.frontTopTitle, fontData, {size: 0.07, resolution: 64, depth: TEXT_DEPTH, faceColors: [new BABYLON.Color4(1, 1, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontTopText) {
         this.frontTopText = frontTopText
@@ -231,7 +231,7 @@ export class Card {
     }
 
     if (this.frontBottomTitle) {
-      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 1, 0, 1)]}, this.experience.scene, earcut)
+      const frontBottomText = BABYLON.MeshBuilder.CreateText(this.name, this.frontBottomTitle, fontData, {size: 0.1, resolution: 64, depth: TEXT_DEPTH, faceColors: [new BABYLON.Color4(1, 1, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontBottomText) {
         this.frontBottomText = frontBottomText
@@ -248,7 +248,7 @@ export class Card {
     }
 
     if (this.frontBottomTitle) {
-      const frontHoverText = BABYLON.MeshBuilder.CreateText(this.name, 'Hover', fontData, {size: 0.05, resolution: 64, depth: 0.01, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
+      const frontHoverText = BABYLON.MeshBuilder.CreateText(this.name, 'Hover', fontData, {size: 0.05, resolution: 64, depth: TEXT_DEPTH, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
 
       if (frontHoverText) {
         this.frontHoverText = frontHoverText
@@ -357,6 +357,9 @@ export class Card {
         .to(this.frontBorderGlow, {visibility: 1, duration: 0.2}, 0)
         .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2}, 0)
       break
+    case 'lay':
+      await gsap.timeline().to(this.frontHoverText, {visibility: 1, duration: 0.2})
+      break
     }
   }
 
@@ -368,6 +371,9 @@ export class Card {
         .to(this.backHoverGlow, {visibility: 0, duration: 0.1})
         .to(this.frontBorderGlow, {visibility: 0, duration: 0.2}, 0)
         .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2}, 0)
+      break
+    case 'lay':
+      await gsap.timeline().to(this.frontHoverText, {visibility: 0, duration: 0.2})
       break
     }
   }

@@ -155,7 +155,6 @@ export let SpriteAtlasCache: any;
     let atlas = cache.get(jsonUrl)
     if (atlas) {
       const onTextureDisposed = function () {
-        console.log(`🚮 Cached SpriteAtlas was disposed: ${atlas == null ? void 0 : atlas.name}`)
         cache.delete(jsonUrl)
       }
       const {texture, defaultMaterial} = atlas
@@ -170,7 +169,6 @@ export let SpriteAtlasCache: any;
     if (!atlas) {
       atlas = await load(jsonUrl, pixelsToUnitsRatio, scene)
       cache.set(jsonUrl, atlas)
-      console.log(`📦 Cached SpriteAtlas: ${name}`)
     }
     return atlas
   }
