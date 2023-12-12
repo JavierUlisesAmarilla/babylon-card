@@ -7,6 +7,7 @@ import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {AnimatedSprite} from '../../utils/animated-sprite'
 import {Experience} from '../Experience'
+import {dustCool} from '../../utils/sprite-animations'
 import gsap from 'gsap'
 
 export class Card {
@@ -222,17 +223,6 @@ export class Card {
   }
 
   async onSelectLevel() {
-    const fx = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json', 30, 100, this.experience.scene)
-    fx.playAndDispose()
-    fx.isPickable = false
-    fx.renderingGroupId = 1
-    fx.position.z = 0
-    fx.rotation.y = Math.PI
-    fx.scaling.setAll(0.5)
-    fx.parent = this.root
-    if (fx.material) fx.material.alphaMode = BABYLON.Engine.ALPHA_ADD
-    fx.color = BABYLON.Color3.FromHexString('#209f0f0')
-
     this.clearTweak()
     this.root.setParent(this.experience.board.root)
     this.experience.board.cards.root.setEnabled(false)
@@ -241,10 +231,23 @@ export class Card {
     lookTarget.z -= 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     const zoomInTarget = [0, -2.2, -3]
     await gsap.timeline()
       .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
+
+    const fx = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json', 30, 100, this.experience.scene)
+    fx.isPickable = false
+    fx.renderingGroupId = 1
+    fx.position.z = 0
+    fx.rotation.y = Math.PI
+    fx.scaling.setAll(0.3)
+    fx.parent = this.root
+    if (fx.material) fx.material.alphaMode = BABYLON.Engine.ALPHA_ADD
+    fx.color = BABYLON.Color3.FromHexString('#209f0f0')
+    fx.playAndDispose()
+
+    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
+    await gsap.timeline()
       .to(this.hoverGlow, {visibility: 0, duration: 0.3, ease: EASE_STRING})
       .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration: 0.5, ease: EASE_STRING})
 
@@ -264,6 +267,13 @@ export class Card {
   }
 
   async onDrop(pickedMesh: BABYLON.AbstractMesh) {
+    const dust = dustCool(this.experience.scene)
+    dust.parent = this.root
+    dust.scaling.setAll(0.1)
+    dust.visibility = 0.05
+    dust.playAndDispose()
+    dust.parent = this.root
+
     const lookTarget = this.root.position.clone()
     lookTarget.z += 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
