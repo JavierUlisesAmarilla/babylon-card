@@ -328,19 +328,27 @@ export class Card {
   }
 
   async onPointerOver() {
-    if (this.curStep === 'level' || this.curStep === 'bottom') {
+    switch (this.curStep) {
+    case 'level':
+    case 'bottom':
       await gsap.timeline()
         .to(this.backHoverGlow, {visibility: 0.3, duration: 0.1})
-        .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2}, 0)
         .to(this.frontBorderGlow, {visibility: 1, duration: 0.2}, 0)
+        .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2}, 0)
+      break
     }
   }
 
   async onPointerOut() {
-    await gsap.timeline()
-      .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
-      .to(this.frontBorderGlow, {visibility: 0, duration: 0.2}, 0)
-      .to(this.backHoverGlow, {visibility: 0, duration: 0.2}, 0)
+    switch (this.curStep) {
+    case 'level':
+    case 'bottom':
+      await gsap.timeline()
+        .to(this.backHoverGlow, {visibility: 0, duration: 0.1})
+        .to(this.frontBorderGlow, {visibility: 0, duration: 0.2}, 0)
+        .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2}, 0)
+      break
+    }
   }
 
   async onAttack(pickedMesh: BABYLON.AbstractMesh) {
