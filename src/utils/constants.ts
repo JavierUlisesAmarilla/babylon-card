@@ -55,4 +55,3 @@ export const CARD_TITLE_ARR = [
     back: 'Dire'
   },
 ]
-export const EASE_STRING = 'power1.inOut'

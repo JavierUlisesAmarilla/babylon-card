@@ -1,9 +1,9 @@
 import * as BABYLON from 'babylonjs'
 import * as earcut from 'earcut'
 
-import {BOARD_ANGLE_FACTOR, EASE_STRING, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
 import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
-import {getLookQuat, getRandomTarget} from '../../utils/common'
+import {delay, getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {AnimatedSprite} from '../../utils/animated-sprite'
 import {Experience} from '../Experience'
@@ -207,6 +207,7 @@ export class Card {
         frontTopText.parent = this.root
         frontTopText.position.y = 0.2
         frontTopText.position.z = -GAP
+        frontTopText.visibility = 0
       }
     } else {
       if (this.frontTopText) {
@@ -222,6 +223,7 @@ export class Card {
         frontBottomText.parent = this.root
         frontBottomText.position.y = -0.27
         frontBottomText.position.z = -GAP
+        frontBottomText.visibility = 0
       }
     } else {
       if (this.frontBottomText) {
@@ -233,6 +235,20 @@ export class Card {
   async onSelectLevel() {
     this.clearTweak()
 
+    this.root.setParent(this.experience.board.root)
+    this.experience.board.cards.root.setEnabled(false)
+
+    const zoomInTarget = [0, -3, -2]
+    const lookTarget = this.root.position.clone()
+    lookTarget.z -= 1
+    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
+    const duration = 0.5
+    const ease = 'circ.inOut'
+    await gsap.timeline()
+      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration, ease})
+      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
+
     const fx = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json', 30, 100, this.experience.scene)
     fx.isPickable = false
     fx.renderingGroupId = 1
@@ -243,22 +259,13 @@ export class Card {
     if (fx.material) fx.material.alphaMode = BABYLON.Engine.ALPHA_ADD
     fx.color = BABYLON.Color3.FromHexString('#209f0f0')
     fx.playAndDispose()
+    await delay(duration)
 
-    const zoomInTarget = [0, -0.1, -3.5]
     await gsap.timeline()
-      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
-
-    this.root.setParent(this.experience.board.root)
-    this.experience.board.cards.root.setEnabled(false)
-
-    const lookTarget = this.root.position.clone()
-    lookTarget.z -= 1
-    this.lookQuat = getLookQuat(this.root.position, lookTarget)
-
-    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
-    await gsap.timeline()
-      .to(this.hoverGlow, {visibility: 0, duration: 0.7, ease: EASE_STRING})
-      .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration: 0.5, ease: EASE_STRING})
+      .to(this.hoverGlow, {visibility: 0, duration, ease})
+      .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration, ease}, 0)
+      .to(this.backText, {visibility: 0, duration, ease}, 0)
+      .to(this.root.scaling, {x: 1, y: 1, z: 1, duration, ease}, 0)
 
     this.backText.dispose()
     this.curStep = 'side'
@@ -268,9 +275,15 @@ export class Card {
     const lookTarget = this.root.position.clone()
     lookTarget.y += 10 * BOARD_ANGLE_FACTOR * 2
     lookTarget.z += 10
-    this.lookQuat = getLookQuat(this.root.position, lookTarget)
-
-    await gsap.timeline().to(this.root.position, {x: 0, y: -2.1, z: LAYER_PICK_Z, duration: 0.5, ease: EASE_STRING})
+    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    const duration = 0.15
+    const ease = 'circ.inOut'
+    await gsap.timeline()
+      .to(this.root.position, {z: LAYER_PICK_Z, duration, ease})
+      .to(this.root.position, {x: 0, y: -2.3, z: LAYER_PICK_Z, duration, ease}, duration)
+      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, duration)
+      .to(this.frontTopText, {visibility: 1, duration: 0.5, ease}, 2 * duration)
+      .to(this.frontBottomText, {visibility: 1, duration: 0.5, ease}, 2 * duration)
 
     this.curStep = 'bottom'
   }
@@ -280,47 +293,55 @@ export class Card {
     dust.parent = this.root
     dust.scaling.setAll(0.1)
     dust.visibility = 0.05
-    dust.playAndDispose()
     dust.parent = this.root
 
     const lookTarget = this.root.position.clone()
     lookTarget.z += 1
-    this.lookQuat = getLookQuat(this.root.position, lookTarget)
-
+    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    const duration = 0.5
+    const ease = 'circ.inOut'
     await gsap.timeline()
-      .to(this.root.position, {x: pickedMesh.position.x, y: pickedMesh.position.y, z: LAYER_CARD_Z, duration: 0.1, ease: EASE_STRING})
-      .to(this.frontGlow, {visibility: 0, duration: 0, ease: EASE_STRING})
-      .to(this.frontBorderGlow, {visibility: 0, duration: 0, ease: EASE_STRING})
+      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration: 0})
+      .to(this.root.position, {x: pickedMesh.position.x, y: pickedMesh.position.y, z: LAYER_PICK_Z, duration, ease})
+      .to(this.frontGlow, {visibility: 0, duration, ease}, 0)
+      .to(this.frontBorderGlow, {visibility: 0, duration, ease}, 0)
+      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration: 0.5, ease}, 0)
+      .to(this.root.position, {z: LAYER_CARD_Z, duration: 0.1 * duration, ease}, duration)
+
+    dust.playAndDispose()
 
     this.curStep = 'lay'
   }
 
   async onPrev() {
-    await gsap.timeline().to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration: 0.5, ease: EASE_STRING})
+    const duration = 0.2
+    await gsap.timeline().to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease: 'power1.inOut'})
   }
 
   async onPointerOver() {
     if (this.curStep === 'level' || this.curStep === 'bottom') {
       await gsap.timeline()
         .to(this.hoverGlow, {visibility: 0.3, duration: 0.1})
-        .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
-        .to(this.frontBorderGlow, {visibility: 1, duration: 0.2})
+        .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2}, 0)
+        .to(this.frontBorderGlow, {visibility: 1, duration: 0.2}, 0)
     }
   }
 
   async onPointerOut() {
     await gsap.timeline()
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
-      .to(this.frontBorderGlow, {visibility: 0, duration: 0.2})
-      .to(this.hoverGlow, {visibility: 0, duration: 0.2})
+      .to(this.frontBorderGlow, {visibility: 0, duration: 0.2}, 0)
+      .to(this.hoverGlow, {visibility: 0, duration: 0.2}, 0)
   }
 
   async onAttack(pickedMesh: BABYLON.AbstractMesh) {
     await this.onPrev()
     const {x, y, z} = pickedMesh.position
+    const duration = 0.1
+    const ease = 'power1.inOut'
     await gsap.timeline()
-      .to(this.root.position, {x, y, z: z - GAP, duration: 0.1, ease: EASE_STRING})
-      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration: 0.1, ease: EASE_STRING})
+      .to(this.root.position, {x, y, z: z - GAP, duration, ease})
+      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease})
   }
 
   getRandomLookQuat() {
