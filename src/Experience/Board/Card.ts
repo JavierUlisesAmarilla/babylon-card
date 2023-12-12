@@ -232,16 +232,6 @@ export class Card {
 
   async onSelectLevel() {
     this.clearTweak()
-    this.root.setParent(this.experience.board.root)
-    this.experience.board.cards.root.setEnabled(false)
-
-    const lookTarget = this.root.position.clone()
-    lookTarget.z -= 1
-    this.lookQuat = getLookQuat(this.root.position, lookTarget)
-
-    const zoomInTarget = [0, -2.2, -3]
-    await gsap.timeline()
-      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
 
     const fx = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json', 30, 100, this.experience.scene)
     fx.isPickable = false
@@ -254,9 +244,20 @@ export class Card {
     fx.color = BABYLON.Color3.FromHexString('#209f0f0')
     fx.playAndDispose()
 
+    const zoomInTarget = [0, -0.1, -3.5]
+    await gsap.timeline()
+      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
+
+    this.root.setParent(this.experience.board.root)
+    this.experience.board.cards.root.setEnabled(false)
+
+    const lookTarget = this.root.position.clone()
+    lookTarget.z -= 1
+    this.lookQuat = getLookQuat(this.root.position, lookTarget)
+
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     await gsap.timeline()
-      .to(this.hoverGlow, {visibility: 0, duration: 0.3, ease: EASE_STRING})
+      .to(this.hoverGlow, {visibility: 0, duration: 0.7, ease: EASE_STRING})
       .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration: 0.5, ease: EASE_STRING})
 
     this.backText.dispose()
