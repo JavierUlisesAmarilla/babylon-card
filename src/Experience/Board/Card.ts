@@ -68,9 +68,9 @@ export class Card {
     const border = BABYLON.MeshBuilder.CreatePlane(name, {width, height, sideOrientation: 2}, this.experience.scene)
     border.parent = this.root
     const borderMaterial = new BABYLON.StandardMaterial(name)
-    borderMaterial.diffuseTexture = new BABYLON.Texture('assets/images/border.webp')
+    borderMaterial.diffuseTexture = new BABYLON.Texture('assets/images/border.png')
     border.material = borderMaterial
-    border.scaling.set(1.2, 1.14, 1)
+    border.scaling.set(2.8 * width, 1.6 * height, 1)
 
     // Front
     const front = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
@@ -84,15 +84,15 @@ export class Card {
     this.frontGlow.setEnabled(true)
     this.frontGlow.applyTextureSizeToGeometry(this.frontGlow.baseTexture)
     this.frontGlow.visibility = 1
-    this.frontGlow.intensity = 20
-    this.frontGlow.scaling.set(0.2 * width, 0.14 * height, 1)
+    this.frontGlow.intensity = 10
+    this.frontGlow.scaling.set(0.18 * width, 0.135 * height, 1)
 
     this.frontBorderGlow = addGhostlyGlowSpriteTo(this.root, '#FFD700')
     this.frontBorderGlow.setEnabled(true)
     this.frontBorderGlow.applyTextureSizeToGeometry(this.frontBorderGlow.baseTexture)
     this.frontBorderGlow.visibility = 0
     this.frontBorderGlow.intensity = 20
-    this.frontBorderGlow.scaling.set(0.2 * width, 0.14 * height, 1)
+    this.frontBorderGlow.scaling.set(0.18 * width, 0.135 * height, 1)
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
@@ -111,15 +111,15 @@ export class Card {
     backGlow.setEnabled(true)
     backGlow.applyTextureSizeToGeometry(backGlow.baseTexture)
     backGlow.visibility = 1
-    backGlow.intensity = 20
+    backGlow.intensity = 10
     backGlow.rotation.y = Math.PI
-    backGlow.scaling.set(0.2 * width, 0.14 * height, 1)
+    backGlow.scaling.set(0.18 * width, 0.135 * height, 1)
 
     // Hover glow
     this.hoverGlow = createPlane3D('assets/images/plasma/glow3.webp', {name, parent: this.root})
     this.hoverGlow.position.z = GAP
     this.hoverGlow.rotation.y = Math.PI
-    this.hoverGlow.scaling.set(0.076, 0.092, 1)
+    this.hoverGlow.scaling.set(0.18 * width, 0.135 * height, 1)
     this.hoverGlow.setTintColor(new BABYLON.Color3(0.1, 0.4, 0.9))
     this.hoverGlow.setAdditiveBlendMode()
     this.hoverGlow.visibility = 0
@@ -302,9 +302,9 @@ export class Card {
   async onPointerOver() {
     if (this.curStep === 'level' || this.curStep === 'bottom') {
       await gsap.timeline()
+        .to(this.hoverGlow, {visibility: 0.3, duration: 0.1})
         .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
         .to(this.frontBorderGlow, {visibility: 1, duration: 0.2})
-        .to(this.hoverGlow, {visibility: 0.5, duration: 0.2})
     }
   }
 
