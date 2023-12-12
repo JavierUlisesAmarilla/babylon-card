@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 import * as earcut from 'earcut'
 
-import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, MAX_ANIM_FRAME_TO} from '../../utils/constants'
+import {BOARD_ANGLE_FACTOR, EASE_STRING, GAP, LAYER_CARD_Z, LAYER_PICK_Z} from '../../utils/constants'
 import {getLookQuat, getRandomTarget} from '../../utils/common'
 
 import {Experience} from '../Experience'
@@ -191,109 +191,57 @@ export class Card {
 
   async onSelectLevel() {
     this.clearTweak()
-    this.experience.board.cards.root.setEnabled(false)
     this.root.setParent(this.experience.board.root)
-
-    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
-    const animPos = new BABYLON.Animation(this.name, 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animPos.setKeys([
-      {
-        frame: 0,
-        value: this.root.position
-      },
-      {
-        frame: 10,
-        value: new BABYLON.Vector3(0, -2.2, -3)
-      },
-      {
-        frame: 20,
-        value: new BABYLON.Vector3(0, -2.2, -3)
-      },
-      {
-        frame: 40,
-        value: new BABYLON.Vector3(bottomRightSlotPos.x, bottomRightSlotPos.y, LAYER_CARD_Z)
-      },
-    ])
+    this.experience.board.cards.root.setEnabled(false)
 
     const lookTarget = this.root.position.clone()
     lookTarget.z -= 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
+    const zoomInTarget = [0, -2.2, -3]
+    await gsap.timeline()
+      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
+      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration: 0.3, ease: EASE_STRING})
+      .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration: 0.5, ease: EASE_STRING})
 
     this.backText.dispose()
     this.curStep = 'side'
   }
 
   async onPickFromSide() {
-    const animPos = new BABYLON.Animation(this.name, 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animPos.setKeys([
-      {
-        frame: 0,
-        value: this.root.position
-      },
-      {
-        frame: 10,
-        value: new BABYLON.Vector3(0, -2.1, LAYER_PICK_Z)
-      },
-    ])
-
     const lookTarget = this.root.position.clone()
     lookTarget.y += 10 * BOARD_ANGLE_FACTOR * 2
     lookTarget.z += 10
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await gsap.timeline().to(this.root.position, {x: 0, y: -2.1, z: LAYER_PICK_Z, duration: 0.5, ease: EASE_STRING})
 
     this.curStep = 'bottom'
   }
 
   async onDrop(pickedMesh: BABYLON.AbstractMesh) {
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animPos.setKeys([
-      {
-        frame: 0,
-        value: this.root.position
-      },
-      {
-        frame: 5,
-        value: new BABYLON.Vector3(pickedMesh.position.x, pickedMesh.position.y, LAYER_CARD_Z)
-      },
-    ])
-
     const lookTarget = this.root.position.clone()
     lookTarget.z += 1
     this.lookQuat = getLookQuat(this.root.position, lookTarget)
 
-    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await gsap.timeline().to(this.root.position, {x: pickedMesh.position.x, y: pickedMesh.position.y, z: LAYER_CARD_Z, duration: 0.1, ease: EASE_STRING})
 
     this.curStep = 'lay'
   }
 
   async onPrev() {
-    const animPos = new BABYLON.Animation('animPos', 'position', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
-    animPos.setKeys([
-      {
-        frame: 0,
-        value: this.root.position
-      },
-      {
-        frame: 10,
-        value: this.prevPos
-      },
-    ])
-
-    await this.experience.scene.beginDirectAnimation(this.root, [animPos], 0, MAX_ANIM_FRAME_TO, false).waitAsync()
+    await gsap.timeline().to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration: 0.5, ease: EASE_STRING})
   }
 
-  onPointerOver() {
+  async onPointerOver() {
     if (this.curStep === 'level' || this.curStep === 'bottom') {
-      gsap.timeline().to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
+      await gsap.timeline().to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2})
     }
   }
 
-  onPointerOut() {
-    gsap.timeline().to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
+  async onPointerOut() {
+    await gsap.timeline().to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2})
   }
 
   getRandomLookQuat() {

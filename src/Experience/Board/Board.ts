@@ -17,7 +17,6 @@ export class Board {
   bottomLeftSlot
   bottomRightSlot
   cards
-
   size = 10
   slotWidth = 0.471
   slotHeight = 0.77

@@ -4,8 +4,6 @@ import {Experience} from '../Experience'
 
 export class Slot {
   experience
-  slotPicker
-  scene
   root
 
   constructor({
@@ -20,13 +18,11 @@ export class Slot {
     position: BABYLON.Vector3
   }) {
     this.experience = new Experience()
-    this.slotPicker = this.experience.slotPicker
-    this.scene = this.experience.scene
-    this.root = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    this.root = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
     const material = new BABYLON.StandardMaterial(name)
     material.diffuseTexture = new BABYLON.Texture('assets/images/slot.webp')
     this.root.material = material
     this.root.position.copyFrom(position)
-    this.slotPicker.addMeshes([this.root])
+    this.experience.slotPicker.addMeshes([this.root])
   }
 }

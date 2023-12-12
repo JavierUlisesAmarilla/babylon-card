@@ -15,7 +15,6 @@ export class Experience {
   scene!: BABYLON.Scene
   camera!: BABYLON.ArcRotateCamera
   hemisphericLight!: BABYLON.HemisphericLight
-
   drag!: Drag
   slotPicker!: SlotPicker
   highlight!: Highlight

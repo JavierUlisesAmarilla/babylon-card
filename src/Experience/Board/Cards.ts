@@ -7,9 +7,7 @@ import {Experience} from '../Experience'
 
 export class Cards {
   experience
-  scene
   root
-
   size = 10
   cardWidth = 0.38
   cardHeight = 0.66
@@ -18,7 +16,6 @@ export class Cards {
 
   constructor() {
     this.experience = new Experience()
-    this.scene = this.experience.scene
     this.root = new BABYLON.TransformNode('cards')
     this.root.rotation.x = -Math.PI * BOARD_ANGLE_FACTOR
     const middleX = 2
@@ -45,7 +42,7 @@ export class Cards {
   }
 
   update() {
-    const pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY)
+    const pickInfo = this.experience.scene.pick(this.experience.scene.pointerX, this.experience.scene.pointerY)
     document.body.style.cursor = 'default'
 
     this.cardArr.forEach((card: Card) => {

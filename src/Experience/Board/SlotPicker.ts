@@ -6,15 +6,12 @@ import {Experience} from '../Experience'
 
 export class SlotPicker extends EventEmitter {
   experience
-  scene
-
   raycastMeshes: BABYLON.AbstractMesh[] = []
 
   constructor() {
     super()
 
     this.experience = new Experience()
-    this.scene = this.experience.scene
   }
 
   addMeshes(meshes: BABYLON.AbstractMesh[]) {
@@ -22,7 +19,7 @@ export class SlotPicker extends EventEmitter {
   }
 
   getPickedMesh(exceptedMeshes: BABYLON.AbstractMesh[] = []) {
-    const pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh: BABYLON.AbstractMesh) => {
+    const pickInfo = this.experience.scene.pick(this.experience.scene.pointerX, this.experience.scene.pointerY, (mesh: BABYLON.AbstractMesh) => {
       return (this.raycastMeshes.indexOf(mesh) > -1) && (exceptedMeshes.indexOf(mesh) === -1)
     })
     return pickInfo?.pickedMesh

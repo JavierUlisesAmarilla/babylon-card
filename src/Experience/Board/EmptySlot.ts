@@ -4,7 +4,6 @@ import {Experience} from '../Experience'
 
 export class EmptySlot {
   experience
-  scene
   root
 
   constructor({
@@ -19,8 +18,7 @@ export class EmptySlot {
     position: BABYLON.Vector3
   }) {
     this.experience = new Experience()
-    this.scene = this.experience.scene
-    this.root = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.scene)
+    this.root = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
     const material = new BABYLON.StandardMaterial(name)
     material.diffuseTexture = new BABYLON.Texture('assets/images/side-slot.webp')
     this.root.material = material

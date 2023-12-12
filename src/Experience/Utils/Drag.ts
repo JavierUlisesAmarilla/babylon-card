@@ -8,7 +8,6 @@ export class Drag extends EventEmitter {
   canvas
   scene
   camera
-
   startingPoint!: BABYLON.Nullable<BABYLON.Vector3>
   currentMesh!: BABYLON.AbstractMesh
   dragPlane!: BABYLON.AbstractMesh
@@ -78,7 +77,6 @@ export class Drag extends EventEmitter {
 
     if (this.startingPoint && this.currentMesh && curPos) {
       const diff = curPos.subtract(this.startingPoint)
-      // this.currentMesh.position.addInPlace(diff)
       this.trigger('pointerMove', [this.currentMesh, diff])
       this.startingPoint = curPos
     }
