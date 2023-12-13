@@ -5,6 +5,7 @@ import {LAYER_PICK_Z, LAYER_SLOT_Z} from '../../utils/constants'
 import {Cards} from './Cards'
 import {EmptySlot} from './EmptySlot'
 import {Experience} from '../Experience'
+import {LeftSidebar} from './LeftSidebar'
 import {Slot} from './Slot'
 
 export class Board {
@@ -17,6 +18,7 @@ export class Board {
   bottomLeftSlot
   bottomRightSlot
   cards
+  leftSidebar
   size = 10
   slotWidth = 0.471
   slotHeight = 0.77
@@ -60,6 +62,9 @@ export class Board {
 
     // Cards
     this.cards = new Cards()
+
+    // Left sidebar
+    this.leftSidebar = new LeftSidebar({name: 'leftSidebar'})
   }
 
   update() {

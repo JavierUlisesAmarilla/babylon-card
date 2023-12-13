@@ -353,6 +353,7 @@ export class Card {
     const ease = 'power1.inOut'
 
     if (this.isShowInfo) {
+      await this.experience.board.leftSidebar.animHide()
       await gsap.timeline()
         .to(this.root.position, {x: this.pickPrevPos.x, y: this.pickPrevPos.y, z: this.pickPrevPos.z, duration, ease})
         .to(this.root.rotationQuaternion, {x: this.prevLookQuat.x, y: this.prevLookQuat.y, z: this.prevLookQuat.z, w: this.prevLookQuat.w, duration, ease}, 0)
@@ -367,6 +368,7 @@ export class Card {
       await lightCrawlFx.waitUntilLoaded()
       lightCrawlFx.parent = this.root
       lightCrawlFx.playAndDispose()
+      await this.experience.board.leftSidebar.animShow()
     }
 
     this.isShowInfo = !this.isShowInfo
