@@ -4,7 +4,7 @@ import * as earcut from 'earcut'
 import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, TEXT_DEPTH} from '../../utils/constants'
 import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
 import {delay, getLookQuat, getRandomTarget} from '../../utils/common'
-import {dustCool, explodeCombat} from '../../utils/sprite-animations'
+import {dustCool, explodeCombat, lightCrawl} from '../../utils/sprite-animations'
 
 import {AnimatedSprite} from '../../utils/animated-sprite'
 import {Experience} from '../Experience'
@@ -25,8 +25,10 @@ export class Card {
   frontHoverTextBack!: BABYLON.Mesh
   isPointerDown = false
   prevPos = new BABYLON.Vector3()
+  pickPrevPos = new BABYLON.Vector3()
   isAnimating = false
   lookQuat!: BABYLON.Quaternion | null
+  prevLookQuat = new BABYLON.Quaternion()
   tweakIntervalIndex!: number
   hoverScale = 1.1
   curStep = 'level' // level, side, bottom, lay
@@ -35,6 +37,8 @@ export class Card {
   frontHoverGlow
   backHoverGlow
   slotName!: string
+  isShowInfo = false
+  isPick = false
 
   constructor({
     name, // Should be unique
@@ -245,6 +249,7 @@ export class Card {
     const lookTarget = this.root.position.clone()
     lookTarget.z -= 1
     const lookQuat = getLookQuat(this.root.position, lookTarget)
+    this.prevLookQuat.copyFrom(lookQuat)
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     const duration = 0.5
     const ease = 'circ.inOut'
@@ -279,6 +284,7 @@ export class Card {
     lookTarget.y += 10 * BOARD_ANGLE_FACTOR * 2
     lookTarget.z += 10
     const lookQuat = getLookQuat(this.root.position, lookTarget)
+    this.prevLookQuat.copyFrom(lookQuat)
     const duration = 0.15
     const ease = 'circ.inOut'
     await gsap.timeline()
@@ -303,6 +309,7 @@ export class Card {
     const lookTarget = this.root.position.clone()
     lookTarget.z += 1
     const lookQuat = getLookQuat(this.root.position, lookTarget)
+    this.prevLookQuat.copyFrom(lookQuat)
     const duration = 0.5
     const ease = 'circ.inOut'
     await gsap.timeline()
@@ -341,6 +348,23 @@ export class Card {
     await gsap.to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease})
   }
 
+  async animToggleShowInfo() {
+    if (this.isShowInfo) {
+      this.root.position.copyFrom(this.pickPrevPos)
+      this.root.rotationQuaternion?.copyFrom(this.prevLookQuat)
+    } else {
+      this.pickPrevPos.copyFrom(this.root.position)
+      this.root.position.set(0.3, -3, -2)
+      this.root.lookAt(new BABYLON.Vector3(0, -6, -4))
+      const lightCrawlFx = lightCrawl(this.experience.scene, false)
+      await lightCrawlFx.waitUntilLoaded()
+      lightCrawlFx.parent = this.root
+      lightCrawlFx.playAndDispose()
+    }
+
+    this.isShowInfo = !this.isShowInfo
+  }
+
   async onPointerOver() {
     switch (this.curStep) {
     case 'level':
@@ -376,6 +400,9 @@ export class Card {
   }
 
   async onPick() {
+    console.log('Card#onPick')
+    this.isPick = true
+
     if (!this.isAnimating) {
       this.isAnimating = true
 
@@ -388,6 +415,7 @@ export class Card {
         break
       case 'bottom':
       case 'lay':
+        await this.animToggleShowInfo()
         break
       }
 
@@ -397,6 +425,7 @@ export class Card {
 
   async onPickDown() {
     await delay(0.05)
+    console.log('Card#onPickDown')
     this.isPointerDown = true
 
     switch (this.curStep) {
@@ -410,6 +439,13 @@ export class Card {
   async onPickUp() {
     await delay(0.05)
     this.isPointerDown = false
+
+    if (this.isPick) {
+      this.isPick = false
+      return
+    }
+
+    console.log('Card#onPickUp')
 
     switch (this.curStep) {
     case 'bottom':
