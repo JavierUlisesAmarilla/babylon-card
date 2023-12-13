@@ -358,9 +358,12 @@ export class Card {
         .to(this.root.rotationQuaternion, {x: this.prevLookQuat.x, y: this.prevLookQuat.y, z: this.prevLookQuat.z, w: this.prevLookQuat.w, duration, ease}, 0)
     } else {
       this.pickPrevPos.copyFrom(this.root.position)
-      this.root.position.set(0.3, -3, -2)
-      this.root.lookAt(new BABYLON.Vector3(0, -6, -4))
-      const lightCrawlFx = lightCrawl(this.experience.scene, false)
+      const targetPos = new BABYLON.Vector3(0.3, -3, -2)
+      const lookQuat = getLookQuat(targetPos, new BABYLON.Vector3(0, 0, 0))
+      await gsap.timeline()
+        .to(this.root.position, {x: targetPos.x, y: targetPos.y, z: targetPos.z, duration, ease})
+        .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
+      const lightCrawlFx = lightCrawl(this.experience.scene)
       await lightCrawlFx.waitUntilLoaded()
       lightCrawlFx.parent = this.root
       lightCrawlFx.playAndDispose()
