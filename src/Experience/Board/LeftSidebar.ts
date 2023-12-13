@@ -1,6 +1,8 @@
 import * as BABYLON from 'babylonjs'
 
 import {Experience} from '../Experience'
+import {getLookQuat} from '../../utils/common'
+import gsap from 'gsap'
 
 export class LeftSidebar {
   name
@@ -33,14 +35,28 @@ export class LeftSidebar {
   }
 
   async animShow() {
-    this.root.visibility = 1
-    this.root.position.x = this.showPosX
-    this.root.lookAt(new BABYLON.Vector3(this.showPosX - this.lookXOffset, 0, 0))
+    const targetPos = this.root.position.clone()
+    targetPos.x = this.showPosX
+    const lookTarget = new BABYLON.Vector3(this.showPosX - this.lookXOffset, 0, 0)
+    const lookQuat = getLookQuat(targetPos, lookTarget)
+    const duration = 0.2
+    const ease = 'circ.inOut'
+    await gsap.timeline()
+      .to(this.root.position, {x: targetPos.x, y: targetPos.y, z: targetPos.z, duration, ease})
+      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
+      .to(this.root, {visibility: 1, duration, ease}, 0)
   }
 
   async animHide() {
-    this.root.visibility = 0
-    this.root.position.x = this.hidePosX
-    this.root.lookAt(new BABYLON.Vector3(this.hidePosX - this.lookXOffset, 0, 0))
+    const targetPos = this.root.position.clone()
+    targetPos.x = this.hidePosX
+    const lookTarget = new BABYLON.Vector3(this.hidePosX - this.lookXOffset, 0, 0)
+    const lookQuat = getLookQuat(targetPos, lookTarget)
+    const duration = 0.2
+    const ease = 'circ.inOut'
+    await gsap.timeline()
+      .to(this.root.position, {x: targetPos.x, y: targetPos.y, z: targetPos.z, duration, ease})
+      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
+      .to(this.root, {visibility: 0, duration, ease}, 0)
   }
 }
