@@ -33,6 +33,7 @@ export class Card {
   frontBorderGlow
   frontHoverGlow
   backHoverGlow
+  slotName!: string
 
   constructor({
     name, // Should be unique
@@ -281,6 +282,11 @@ export class Card {
   }
 
   async onDrop(pickedMesh: BABYLON.AbstractMesh) {
+    if (this.slotName === pickedMesh.name) {
+      return
+    }
+
+    this.slotName = pickedMesh.name
     const dust = dustCool(this.experience.scene)
     dust.parent = this.root
     dust.scaling.setAll(0.1)
