@@ -349,9 +349,13 @@ export class Card {
   }
 
   async animToggleShowInfo() {
+    const duration = 0.2
+    const ease = 'power1.inOut'
+
     if (this.isShowInfo) {
-      this.root.position.copyFrom(this.pickPrevPos)
-      this.root.rotationQuaternion?.copyFrom(this.prevLookQuat)
+      await gsap.timeline()
+        .to(this.root.position, {x: this.pickPrevPos.x, y: this.pickPrevPos.y, z: this.pickPrevPos.z, duration, ease})
+        .to(this.root.rotationQuaternion, {x: this.prevLookQuat.x, y: this.prevLookQuat.y, z: this.prevLookQuat.z, w: this.prevLookQuat.w, duration, ease}, 0)
     } else {
       this.pickPrevPos.copyFrom(this.root.position)
       this.root.position.set(0.3, -3, -2)
