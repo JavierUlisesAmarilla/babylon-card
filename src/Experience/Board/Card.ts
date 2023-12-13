@@ -235,7 +235,7 @@ export class Card {
     }
   }
 
-  async onSelectLevel() {
+  async animSelectLevel() {
     this.clearTweak()
 
     this.root.setParent(this.experience.board.root)
@@ -274,7 +274,7 @@ export class Card {
     this.curStep = 'side'
   }
 
-  async onPickFromSide() {
+  async animPickFromSide() {
     const lookTarget = this.root.position.clone()
     lookTarget.y += 10 * BOARD_ANGLE_FACTOR * 2
     lookTarget.z += 10
@@ -291,16 +291,13 @@ export class Card {
     this.curStep = 'bottom'
   }
 
-  async onDrop(pickedMesh: BABYLON.AbstractMesh) {
+  async animDrop(pickedMesh: BABYLON.AbstractMesh) {
     if (this.slotName === pickedMesh.name) {
       return
     }
 
     this.slotName = pickedMesh.name
     const dust = dustCool(this.experience.scene)
-    dust.parent = this.root
-    dust.scaling.setAll(0.1)
-    dust.visibility = 0.05
     dust.parent = this.root
 
     const lookTarget = this.root.position.clone()
@@ -323,9 +320,19 @@ export class Card {
     this.curStep = 'lay'
   }
 
-  async onPrev() {
+  async animPrev() {
     const duration = 0.2
     await gsap.timeline().to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease: 'power1.inOut'})
+  }
+
+  async animAttack(pickedMesh: BABYLON.AbstractMesh) {
+    await this.animPrev()
+    const {x, y, z} = pickedMesh.position
+    const duration = 0.1
+    const ease = 'power1.inOut'
+    await gsap.timeline()
+      .to(this.root.position, {x, y, z: z - GAP, duration, ease})
+      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease})
   }
 
   async onPointerOver() {
@@ -363,21 +370,18 @@ export class Card {
   }
 
   async onPick() {
-    console.log('Card#onPick')
-
     if (!this.isAnimating) {
       this.isAnimating = true
 
       switch (this.curStep) {
       case 'level':
-        await this.onSelectLevel()
+        await this.animSelectLevel()
         break
       case 'side':
-        await this.onPickFromSide()
+        await this.animPickFromSide()
         break
       case 'bottom':
       case 'lay':
-        console.log('Card#onPick: bottom, lay')
         break
       }
 
@@ -387,7 +391,6 @@ export class Card {
 
   async onPickDown() {
     await delay(0.05)
-    console.log('Card#onPickDown')
     this.isPointerDown = true
 
     switch (this.curStep) {
@@ -400,7 +403,6 @@ export class Card {
 
   async onPickUp() {
     await delay(0.05)
-    console.log('Card#onPickUp')
     this.isPointerDown = false
 
     switch (this.curStep) {
@@ -414,30 +416,20 @@ export class Card {
           const prefixName = pickedMesh.name.substring(0, 6)
 
           if (prefixName === 'b-slot') {
-            await this.onDrop(pickedMesh)
+            await this.animDrop(pickedMesh)
           }
 
           if (prefixName === 't-slot') {
-            await this.onAttack(pickedMesh)
+            await this.animAttack(pickedMesh)
           }
         } else {
-          await this.onPrev()
+          await this.animPrev()
         }
 
         this.isAnimating = false
       }
       break
     }
-  }
-
-  async onAttack(pickedMesh: BABYLON.AbstractMesh) {
-    await this.onPrev()
-    const {x, y, z} = pickedMesh.position
-    const duration = 0.1
-    const ease = 'power1.inOut'
-    await gsap.timeline()
-      .to(this.root.position, {x, y, z: z - GAP, duration, ease})
-      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease})
   }
 
   getRandomLookQuat() {
