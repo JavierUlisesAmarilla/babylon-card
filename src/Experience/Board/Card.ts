@@ -349,6 +349,8 @@ export class Card {
   }
 
   async onPick() {
+    console.log('Card#onPick')
+
     if (!this.isAnimating) {
       this.isAnimating = true
 
@@ -359,6 +361,10 @@ export class Card {
       case 'side':
         await this.onPickFromSide()
         break
+      case 'bottom':
+      case 'lay':
+        console.log('Card#onPick: bottom, lay')
+        break
       }
 
       this.isAnimating = false
@@ -366,6 +372,8 @@ export class Card {
   }
 
   async onPickDown() {
+    await delay(0.05)
+    console.log('Card#onPickDown')
     this.isPointerDown = true
 
     switch (this.curStep) {
@@ -377,6 +385,8 @@ export class Card {
   }
 
   async onPickUp() {
+    await delay(0.05)
+    console.log('Card#onPickUp')
     this.isPointerDown = false
 
     switch (this.curStep) {
