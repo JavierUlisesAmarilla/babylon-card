@@ -227,7 +227,7 @@ export class Card {
     }
 
     if (this.frontBottomTitle) {
-      const frontHoverText = BABYLON.MeshBuilder.CreateText(this.name, 'Hover', fontData, {size: 0.05, resolution: 64, depth: TEXT_DEPTH, faceColors: [new BABYLON.Color4(1, 0, 0, 1)]}, this.experience.scene, earcut)
+      const frontHoverText = BABYLON.MeshBuilder.CreateText(this.name, 'Hover', fontData, {size: 0.05, resolution: 64, depth: TEXT_DEPTH}, this.experience.scene, earcut)
 
       if (frontHoverText) {
         this.frontHoverText = frontHoverText
