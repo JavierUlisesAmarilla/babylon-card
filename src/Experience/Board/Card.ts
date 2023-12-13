@@ -4,10 +4,10 @@ import * as earcut from 'earcut'
 import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, TEXT_DEPTH} from '../../utils/constants'
 import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
 import {delay, getLookQuat, getRandomTarget} from '../../utils/common'
+import {dustCool, explodeCombat} from '../../utils/sprite-animations'
 
 import {AnimatedSprite} from '../../utils/animated-sprite'
 import {Experience} from '../Experience'
-import {dustCool} from '../../utils/sprite-animations'
 import gsap from 'gsap'
 
 export class Card {
@@ -297,8 +297,8 @@ export class Card {
     }
 
     this.slotName = pickedMesh.name
-    const dust = dustCool(this.experience.scene)
-    dust.parent = this.root
+    const dustCoolFx = dustCool(this.experience.scene)
+    dustCoolFx.parent = this.root
 
     const lookTarget = this.root.position.clone()
     lookTarget.z += 1
@@ -315,7 +315,7 @@ export class Card {
       .to(this.frontHoverGlow, {visibility: 1, duration: 0.3 * duration, ease}, duration)
       .to(this.frontHoverGlow, {visibility: 0, duration: 0.3 * duration, ease})
 
-    dust.playAndDispose()
+    dustCoolFx.playAndDispose()
 
     this.curStep = 'lay'
   }
@@ -330,9 +330,15 @@ export class Card {
     const {x, y, z} = pickedMesh.position
     const duration = 0.1
     const ease = 'power1.inOut'
-    await gsap.timeline()
-      .to(this.root.position, {x, y, z: z - GAP, duration, ease})
-      .to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease})
+
+    await gsap.timeline().to(this.root.position, {x, y, z: z - GAP, duration, ease})
+
+    const explodeCombatFx = explodeCombat(this.experience.scene)
+    await explodeCombatFx.waitUntilLoaded()
+    explodeCombatFx.parent = pickedMesh
+    explodeCombatFx.playAndDispose()
+
+    await gsap.to(this.root.position, {x: this.prevPos.x, y: this.prevPos.y, z: this.prevPos.z, duration, ease})
   }
 
   async onPointerOver() {

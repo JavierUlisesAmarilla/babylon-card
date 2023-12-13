@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 
 import {AnimatedSprite} from './animated-sprite'
-import { GAP } from './constants'
+import {GAP} from './constants'
 
 export const dustCool = (scene: BABYLON.Scene) => {
   const sprite = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/smoke-004-hit-explosion-radial-noct-norsz.json', 30, 25, scene)
@@ -21,5 +21,12 @@ export const lightCrawl = (scene: BABYLON.Scene) => {
     sprite.material.alphaMode = BABYLON.Engine.ALPHA_ADD
   }
 
+  return sprite
+}
+
+export const explodeCombat = (scene: BABYLON.Scene) => {
+  const sprite = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/explosion-011-hit-radial-noct-norsz.json', 30, undefined, scene)
+  sprite.position.z = -GAP
+  sprite.scaling.setAll(0.5)
   return sprite
 }
