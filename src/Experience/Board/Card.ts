@@ -22,6 +22,7 @@ export class Card {
   frontBottomTitle
   frontBottomText!: BABYLON.Mesh
   frontHoverText!: BABYLON.Mesh
+  frontHoverTextBack!: BABYLON.Mesh
   isPointerDown = false
   prevPos = new BABYLON.Vector3()
   isAnimating = false
@@ -103,6 +104,15 @@ export class Card {
     this.frontHoverGlow.setTintColor(new BABYLON.Color3(0.1, 0.4, 0.9))
     this.frontHoverGlow.setAdditiveBlendMode()
     this.frontHoverGlow.visibility = 0
+
+    this.frontHoverTextBack = BABYLON.MeshBuilder.CreatePlane(name, {width: 0.8 * width, height: 0.3 * height}, this.experience.scene)
+    this.frontHoverTextBack.parent = this.root
+    const frontHoverTextBackMaterial = new BABYLON.StandardMaterial(name)
+    frontHoverTextBackMaterial.diffuseTexture = new BABYLON.Texture('assets/images/border.png')
+    this.frontHoverTextBack.material = frontHoverTextBackMaterial
+    this.frontHoverTextBack.position.z = -GAP
+    this.frontHoverTextBack.visibility = 0
+    this.frontHoverTextBack.isPickable = false
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
@@ -217,7 +227,7 @@ export class Card {
 
       if (frontHoverText) {
         this.frontHoverText = frontHoverText
-        frontHoverText.parent = this.root
+        frontHoverText.parent = this.frontHoverTextBack
         frontHoverText.position.y = 0
         frontHoverText.position.z = -GAP
         frontHoverText.visibility = 0
@@ -328,7 +338,9 @@ export class Card {
         .to(this.root.scaling, {x: this.hoverScale, y: this.hoverScale, z: this.hoverScale, duration: 0.2}, 0)
       break
     case 'lay':
-      await gsap.timeline().to(this.frontHoverText, {visibility: 1, duration: 0.2})
+      await gsap.timeline()
+        .to(this.frontHoverTextBack, {visibility: 1, duration: 0.2})
+        .to(this.frontHoverText, {visibility: 1, duration: 0.2}, 0)
       break
     }
   }
@@ -343,7 +355,9 @@ export class Card {
         .to(this.root.scaling, {x: 1, y: 1, z: 1, duration: 0.2}, 0)
       break
     case 'lay':
-      await gsap.timeline().to(this.frontHoverText, {visibility: 0, duration: 0.2})
+      await gsap.timeline()
+        .to(this.frontHoverTextBack, {visibility: 0, duration: 0.2})
+        .to(this.frontHoverText, {visibility: 0, duration: 0.2}, 0)
       break
     }
   }
