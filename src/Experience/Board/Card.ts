@@ -106,6 +106,9 @@ export class Card {
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOutTrigger}, () => this.onPointerOut()))
+    front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickTrigger}, () => this.onPick()))
+    front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickDownTrigger}, () => this.onPickDown()))
+    front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickUpTrigger}, () => this.onPickUp()))
 
     // Back
     const back = BABYLON.MeshBuilder.CreatePlane(name, {width, height}, this.experience.scene)
@@ -132,59 +135,20 @@ export class Card {
     this.backHoverGlow.setAdditiveBlendMode()
     this.backHoverGlow.visibility = 0
 
+    back.actionManager = new BABYLON.ActionManager(this.experience.scene)
+    back.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
+    back.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOutTrigger}, () => this.onPointerOut()))
+    back.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickTrigger}, () => this.onPick()))
+    back.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickDownTrigger}, () => this.onPickDown()))
+    back.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickUpTrigger}, () => this.onPickUp()))
+
     this.tweak()
     this.reset()
-
-    this.experience.drag.on('pointerDown', async (root: BABYLON.Mesh) => {
-      if (root.name === name && !this.isAnimating) {
-        this.isAnimating = true
-        this.isPointerDown = true
-
-        switch (this.curStep) {
-        case 'level':
-          await this.onSelectLevel()
-          break
-        case 'side':
-          await this.onPickFromSide()
-          break
-        case 'bottom':
-        case 'lay':
-          this.prevPos.copyFrom(this.root.position)
-          break
-        }
-
-        this.isAnimating = false
-      }
-    })
 
     this.experience.drag.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
       if (root.name === name && this.isPointerDown && (this.curStep === 'bottom' || this.curStep === 'lay')) {
         this.root.position.addInPlace(diff)
       }
-    })
-
-    this.experience.drag.on('pointerUp', async () => {
-      if (this.isPointerDown && !this.isAnimating) {
-        this.isAnimating = true
-        const pickedMesh = this.experience.slotPicker.getPickedMesh()
-
-        if (pickedMesh) {
-          const prefixName = pickedMesh.name.substring(0, 6)
-
-          if (prefixName === 'b-slot') {
-            await this.onDrop(pickedMesh)
-          }
-
-          if (prefixName === 't-slot') {
-            await this.onAttack(pickedMesh)
-          }
-        } else {
-          await this.onPrev()
-        }
-      }
-
-      this.isPointerDown = false
-      this.isAnimating = false
     })
   }
 
@@ -374,6 +338,64 @@ export class Card {
       break
     case 'lay':
       await gsap.timeline().to(this.frontHoverText, {visibility: 0, duration: 0.2})
+      break
+    }
+  }
+
+  async onPick() {
+    if (!this.isAnimating) {
+      this.isAnimating = true
+
+      switch (this.curStep) {
+      case 'level':
+        await this.onSelectLevel()
+        break
+      case 'side':
+        await this.onPickFromSide()
+        break
+      }
+
+      this.isAnimating = false
+    }
+  }
+
+  async onPickDown() {
+    this.isPointerDown = true
+
+    switch (this.curStep) {
+    case 'bottom':
+    case 'lay':
+      this.prevPos.copyFrom(this.root.position)
+      break
+    }
+  }
+
+  async onPickUp() {
+    this.isPointerDown = false
+
+    switch (this.curStep) {
+    case 'bottom':
+    case 'lay':
+      if (!this.isAnimating) {
+        this.isAnimating = true
+        const pickedMesh = this.experience.slotPicker.getPickedMesh()
+
+        if (pickedMesh) {
+          const prefixName = pickedMesh.name.substring(0, 6)
+
+          if (prefixName === 'b-slot') {
+            await this.onDrop(pickedMesh)
+          }
+
+          if (prefixName === 't-slot') {
+            await this.onAttack(pickedMesh)
+          }
+        } else {
+          await this.onPrev()
+        }
+
+        this.isAnimating = false
+      }
       break
     }
   }
