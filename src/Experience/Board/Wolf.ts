@@ -71,18 +71,11 @@ export class Wolf {
       const rotDuration = 0.3
       const ease = 'none'
 
-      if (!this.root.rotationQuaternion?.equals(orient)) {
-        this.rootChild.position.z = -0.1
-        this.animations['idle'].start(true)
-        this.gsapAnim = gsap.timeline().to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
-        await this.gsapAnim
-        this.animations['idle'].stop()
-      }
-
       if (!this.root.position.equals(point)) {
         this.animations['run'].start(true)
         this.rootChild.position.z = 0
-        this.gsapAnim = gsap.timeline().to(this.root.position, {x: point.x, y: point.y, z: point.z, duration: posDuration, ease})
+        this.gsapAnim = gsap.timeline().to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
+          .to(this.root.position, {x: point.x, y: point.y, z: point.z, duration: posDuration, ease}, 0)
         await this.gsapAnim
         this.animations['run'].stop()
       }
