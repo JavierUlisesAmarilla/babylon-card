@@ -12,6 +12,7 @@ export class Wolf {
   animations: {[key: string]: BABYLON.AnimationGroup} = {}
   rootChild
   isMoving = false
+  gsapAnim!: gsap.core.Timeline
 
   constructor() {
     this.experience = new Experience()
@@ -69,14 +70,16 @@ export class Wolf {
       if (!this.root.rotationQuaternion?.equals(orient)) {
         this.rootChild.position.z = -0.1
         this.animations['idle'].start(true)
-        await gsap.timeline().to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
+        this.gsapAnim = gsap.timeline().to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
+        await this.gsapAnim
         this.animations['idle'].stop()
       }
 
       if (!this.root.position.equals(point)) {
         this.animations['run'].start(true)
         this.rootChild.position.z = 0
-        await gsap.timeline().to(this.root.position, {x: point.x, y: point.y, z: point.z, duration: posDuration, ease})
+        this.gsapAnim = gsap.timeline().to(this.root.position, {x: point.x, y: point.y, z: point.z, duration: posDuration, ease})
+        await this.gsapAnim
         this.animations['run'].stop()
       }
     }
@@ -86,7 +89,22 @@ export class Wolf {
     this.isMoving = false
   }
 
+  stopMove() {
+    if (this.gsapAnim) {
+      this.gsapAnim.kill()
+    }
+
+    this.isMoving = false
+  }
+
   async moveTo(target: BABYLON.Vector3) {
+    this.stopMove()
     await this.moveThroughPath([this.root.position, target])
+  }
+
+  async moveAround() {
+    setInterval(() => {
+      // TODO
+    }, 3000)
   }
 }
