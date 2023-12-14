@@ -24,5 +24,12 @@ export class Slot {
     this.root.material = material
     this.root.position.copyFrom(position)
     this.experience.slotPicker.addMeshes([this.root])
+    this.root.actionManager = new BABYLON.ActionManager(this.experience.scene)
+    this.root.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickTrigger}, (e: BABYLON.ActionEvent) => this.onPick(e)))
+  }
+
+  onPick(e: BABYLON.ActionEvent) {
+    const pickedPoint = e.additionalData.pickedPoint
+    this.experience.board.wolf.moveTo(pickedPoint)
   }
 }
