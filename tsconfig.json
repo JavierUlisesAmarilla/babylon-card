@@ -19,7 +19,8 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
     "types": [
-      "babylonjs"
+      "babylonjs",
+      "babylonjs-loaders"
     ],
   },
   "include": [

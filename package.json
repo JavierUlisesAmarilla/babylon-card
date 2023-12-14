@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "babylonjs": "^6.32.1",
+    "babylonjs-loaders": "^6.33.2",
     "earcut": "^2.2.4",
     "gsap": "^3.12.3"
   }
