@@ -5,6 +5,9 @@ import * as BABYLON from 'babylonjs'
 import {Experience} from '../Experience'
 import gsap from 'gsap'
 
+const halfW = 1.4
+const halfH = 2
+
 export class Wolf {
   name = 'wolf'
   experience
@@ -17,7 +20,7 @@ export class Wolf {
   constructor() {
     this.experience = new Experience()
     this.root = new BABYLON.TransformNode(this.name)
-    this.root.position.set(0, 2.2, 0)
+    this.root.position.set(-halfW, halfH, 0)
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
     this.rootChild = new BABYLON.TransformNode(this.name)
     this.rootChild.parent = this.root
@@ -36,6 +39,7 @@ export class Wolf {
     this.animations['site'] = animationGroups[4]
     this.stopAllAnimations()
     this.animations['idle'].start(true)
+    this.moveAround()
   }
 
   stopAllAnimations() {
@@ -100,11 +104,17 @@ export class Wolf {
   async moveTo(target: BABYLON.Vector3) {
     this.stopMove()
     await this.moveThroughPath([this.root.position, target])
+    // setTimeout(() => this.moveAround(), 3000)
   }
 
   async moveAround() {
-    setInterval(() => {
-      // TODO
-    }, 3000)
+    this.stopMove()
+    const aroundPointArr = [
+      this.root.position,
+      new BABYLON.Vector3(-halfW, halfH, 0),
+      new BABYLON.Vector3(-halfW, -halfH, 0),
+    ]
+    await this.moveThroughPath(aroundPointArr)
+    this.moveAround()
   }
 }
