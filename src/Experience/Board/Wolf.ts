@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import 'babylonjs-loaders'
 
 import * as BABYLON from 'babylonjs'
@@ -7,6 +8,8 @@ import gsap from 'gsap'
 
 const halfW = 1.4
 const halfH = 2
+const clampGap = 0.05
+let instance: Wolf
 
 export class Wolf {
   name = 'wolf'
@@ -17,8 +20,10 @@ export class Wolf {
   isMoving = false
   gsapAnim!: gsap.core.Timeline
   moveToTimeoutIndex!: number
+  curAnimKey!: string
 
   constructor() {
+    instance = this
     this.experience = new Experience()
     this.root = new BABYLON.TransformNode(this.name)
     this.root.position.set(-halfW, halfH, 0)
@@ -38,9 +43,12 @@ export class Wolf {
     this.animations['creep'] = animationGroups[2]
     this.animations['idle'] = animationGroups[3]
     this.animations['site'] = animationGroups[4]
-    this.stopAllAnimations()
-    this.animations['idle'].start(true)
+    this.playAllAnimations()
     this.moveAround()
+  }
+
+  playAllAnimations() {
+    Object.values(this.animations).forEach(animation => animation.start(true))
   }
 
   stopAllAnimations() {
@@ -63,8 +71,6 @@ export class Wolf {
       return orientationRes.clone()
     }
 
-    this.stopAllAnimations()
-
     for (let i = 0; i < points.length; i++) {
       const point = points[i]
       const orient = orientation(i)
@@ -73,17 +79,14 @@ export class Wolf {
       const ease = 'none'
 
       if (!this.root.position.equals(point)) {
-        this.animations['run'].start(true)
-        this.rootChild.position.z = 0
+        this.changeAnimation('run')
         this.gsapAnim = gsap.timeline().to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
           .to(this.root.position, {x: point.x, y: point.y, z: point.z, duration: posDuration, ease}, 0)
         await this.gsapAnim
-        this.animations['run'].stop()
       }
     }
 
-    this.rootChild.position.z = -0.1
-    this.animations['idle'].start(true)
+    this.changeAnimation('idle')
     this.isMoving = false
   }
 
@@ -99,7 +102,7 @@ export class Wolf {
     clearTimeout(this.moveToTimeoutIndex)
     this.stopMove()
     await this.moveThroughPath([this.root.position, target])
-    this.moveToTimeoutIndex = setTimeout(() => this.moveAround(), 3000)
+    this.moveToTimeoutIndex = setTimeout(() => this.moveAround(), 5000)
   }
 
   async moveAround() {
@@ -117,5 +120,29 @@ export class Wolf {
     }
 
     this.moveAround()
+  }
+
+  onBeforeAnimations() {
+    if (!instance.animations) {
+      return
+    }
+
+    Object.keys(instance.animations).forEach((key: string) => {
+      if (instance.curAnimKey === key) {
+        instance.animations[key].weight = BABYLON.Scalar.Clamp(instance.animations[key].weight + clampGap, 0, 1)
+      } else {
+        instance.animations[key].weight = BABYLON.Scalar.Clamp(instance.animations[key].weight - clampGap, 0, 1)
+      }
+    })
+
+    if (instance.curAnimKey && instance.animations[instance.curAnimKey].weight === 1) {
+      instance.experience.scene.onBeforeAnimationsObservable.removeCallback(instance.onBeforeAnimations)
+    }
+  }
+
+  changeAnimation(animKey: string) {
+    this.experience.scene.onBeforeAnimationsObservable.removeCallback(instance.onBeforeAnimations)
+    this.curAnimKey = animKey
+    this.experience.scene.onBeforeAnimationsObservable.add(instance.onBeforeAnimations)
   }
 }
