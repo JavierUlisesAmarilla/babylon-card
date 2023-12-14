@@ -3,6 +3,7 @@ import 'babylonjs-loaders'
 import * as BABYLON from 'babylonjs'
 
 import {Experience} from '../Experience'
+import {getLookQuat} from '../../utils/common'
 
 export class Wolf {
   experience
@@ -12,6 +13,9 @@ export class Wolf {
   constructor() {
     this.experience = new Experience()
     this.root = new BABYLON.TransformNode('wolf')
+    this.root.position.set(0, 2.2, 0)
+    this.root.rotationQuaternion = new BABYLON.Quaternion()
+    this.root.lookAt(new BABYLON.Vector3(0, 3, 0))
     this.init()
   }
 
@@ -24,9 +28,6 @@ export class Wolf {
     wolfWrap.rotation.z = -0.5 * Math.PI
     meshes.forEach(mesh => mesh.parent = wolfWrap)
 
-    this.root.position.set(0, 2.2, 0)
-    this.root.lookAt(new BABYLON.Vector3(0, 3, 0))
-
     animationGroups.forEach(animationGroup => animationGroup.stop())
     this.animations['run'] = animationGroups[0]
     this.animations['walk'] = animationGroups[1]
@@ -34,5 +35,11 @@ export class Wolf {
     this.animations['idle'] = animationGroups[3]
     this.animations['site'] = animationGroups[4]
     this.animations['idle'].start(true)
+  }
+
+  async moveTo(target: BABYLON.Vector3) {
+    console.log('Wolf#moveTo: target: ', target)
+    const lookQuat = getLookQuat(this.root.position, target)
+    this.root.rotationQuaternion?.copyFrom(lookQuat)
   }
 }

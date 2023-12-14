@@ -33,6 +33,8 @@ export class Board {
     const material = new BABYLON.StandardMaterial('board')
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
     this.root.material = material
+    this.root.actionManager = new BABYLON.ActionManager(this.scene)
+    this.root.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickTrigger}, (e: BABYLON.ActionEvent) => this.onPick(e)))
 
     // Pick layer
     const layerPick = BABYLON.MeshBuilder.CreatePlane('layerPick', {width: this.size, height: this.size}, this.scene)
@@ -74,5 +76,10 @@ export class Board {
 
   update() {
     this.cards.update()
+  }
+
+  onPick(e: BABYLON.ActionEvent) {
+    const pickedPoint = e.additionalData.pickedPoint
+    this.wolf.moveTo(pickedPoint)
   }
 }
