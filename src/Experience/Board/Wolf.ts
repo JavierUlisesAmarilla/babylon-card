@@ -16,6 +16,7 @@ export class Wolf {
   rootChild
   isMoving = false
   gsapAnim!: gsap.core.Timeline
+  moveToTimeoutIndex!: number
 
   constructor() {
     this.experience = new Experience()
@@ -95,17 +96,26 @@ export class Wolf {
   }
 
   async moveTo(target: BABYLON.Vector3) {
+    clearTimeout(this.moveToTimeoutIndex)
     this.stopMove()
     await this.moveThroughPath([this.root.position, target])
-    setTimeout(() => this.moveAround(), 3000)
+    this.moveToTimeoutIndex = setTimeout(() => this.moveAround(), 3000)
   }
 
   async moveAround() {
     this.stopMove()
-    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(-halfW, halfH, 0)])
-    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(-halfW, -halfH, 0)])
-    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(halfW, -halfH, 0)])
-    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(halfW, halfH, 0)])
+    const pointArr = [
+      this.root.position,
+      new BABYLON.Vector3(-halfW, halfH, 0),
+      new BABYLON.Vector3(-halfW, -halfH, 0),
+      new BABYLON.Vector3(halfW, -halfH, 0),
+      new BABYLON.Vector3(halfW, halfH, 0),
+    ]
+
+    for (let i = 1; i < pointArr.length; i++) {
+      await this.moveThroughPath([pointArr[i - 1], pointArr[i]])
+    }
+
     this.moveAround()
   }
 }
