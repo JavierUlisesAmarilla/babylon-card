@@ -104,17 +104,15 @@ export class Wolf {
   async moveTo(target: BABYLON.Vector3) {
     this.stopMove()
     await this.moveThroughPath([this.root.position, target])
-    // setTimeout(() => this.moveAround(), 3000)
+    setTimeout(() => this.moveAround(), 3000)
   }
 
   async moveAround() {
     this.stopMove()
-    const aroundPointArr = [
-      this.root.position,
-      new BABYLON.Vector3(-halfW, halfH, 0),
-      new BABYLON.Vector3(-halfW, -halfH, 0),
-    ]
-    await this.moveThroughPath(aroundPointArr)
+    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(-halfW, halfH, 0)])
+    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(-halfW, -halfH, 0)])
+    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(halfW, -halfH, 0)])
+    await this.moveThroughPath([this.root.position, new BABYLON.Vector3(halfW, halfH, 0)])
     this.moveAround()
   }
 }
