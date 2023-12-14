@@ -24,8 +24,8 @@ export class Wolf {
     wolfWrap.rotation.z = -0.5 * Math.PI
     meshes.forEach(mesh => mesh.parent = wolfWrap)
 
-    this.root.position.set(0, 1.5, 0)
-    this.root.lookAt(new BABYLON.Vector3(0, 2, 0))
+    this.root.position.set(0, 2.2, 0)
+    this.root.lookAt(new BABYLON.Vector3(0, 3, 0))
 
     animationGroups.forEach(animationGroup => animationGroup.stop())
     this.animations['run'] = animationGroups[0]
@@ -33,6 +33,6 @@ export class Wolf {
     this.animations['creep'] = animationGroups[2]
     this.animations['idle'] = animationGroups[3]
     this.animations['site'] = animationGroups[4]
-    this.animations['run'].start(true)
+    this.animations['idle'].start(true)
   }
 }
