@@ -48,4 +48,9 @@ export class ArrowHead {
     BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.X, curveTangents[curveTangents.length - 1], curQuat)
     this.root.rotationQuaternion?.copyFrom(curQuat)
   }
+
+  setCurve3(curve3: BABYLON.Curve3) {
+    this.quadraticBezier = curve3
+    this.reset()
+  }
 }

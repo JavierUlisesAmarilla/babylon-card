@@ -72,7 +72,7 @@ export class Arrow {
       }))
     }
 
-    for (let i = 0; i < visibleBoxCount; i++) {
+    for (let i = 0; i < visibleBoxCount; i++) { // Update visible boxes' curve
       this.arrowBoxArr[i].setCurve3(curve)
     }
 
@@ -82,7 +82,7 @@ export class Arrow {
 
     // Set arrow head
     if (this.arrowHead) {
-      // TODO
+      this.arrowHead.setCurve3(curve)
     } else {
       this.arrowHead = new ArrowHead({
         quadraticBezier: curve,
