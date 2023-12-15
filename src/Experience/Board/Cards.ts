@@ -20,7 +20,7 @@ export class Cards {
     this.root.rotation.x = -Math.PI * BOARD_ANGLE_FACTOR
     const middleX = 2
     const middleY = 1
-    // return
+    return
 
     for (let i = 0; i < 10; i++) {
       const x = i % 5

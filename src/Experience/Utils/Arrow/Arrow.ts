@@ -3,7 +3,6 @@ import * as BABYLON from 'babylonjs'
 
 import {ArrowBox} from './ArrowBox'
 import {ArrowHead} from './ArrowHead'
-import {delay} from '../../../utils/common'
 
 export class Arrow {
   boxWidth
@@ -40,7 +39,7 @@ export class Arrow {
     this.bulge = bulge
     this.color4 = color4
     this.origin = new BABYLON.Vector3(-2, -2, -4 * boxDepth)
-    this.target = new BABYLON.Vector3(-2, 2, -4 * boxDepth)
+    this.target = new BABYLON.Vector3(2, -2, -4 * boxDepth)
 
     for (let i = 0; i < 100; i++) {
       this.arrowBoxArr.push(new ArrowBox({
@@ -74,20 +73,15 @@ export class Arrow {
 
     this.arrowBoxArr.forEach(async (arrowBox: ArrowBox, index: number) => {
       if (index < visibleBoxCount) {
-        if (arrowBox.curDistance) {
-          await arrowBox.stopAnim()
-        }
-
+        arrowBox.stopAnim()
         arrowBox.curDistance = index * (this.boxLength + this.gap)
-        arrowBox.setCurve3(curve)
+        arrowBox.setCurve3AndStartAnim(curve)
       }
     })
 
     for (let i = visibleBoxCount; i < this.arrowBoxArr.length; i++) { // Stop unnecessary boxes' animation
       this.arrowBoxArr[i].stopAnim()
     }
-
-    await delay(0.05)
 
     // Set arrow head
     if (!this.arrowHead) {

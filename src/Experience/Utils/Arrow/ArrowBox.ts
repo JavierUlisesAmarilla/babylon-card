@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
-import {delay} from '../../../utils/common'
 import gsap from 'gsap'
 
 export class ArrowBox {
@@ -10,9 +9,9 @@ export class ArrowBox {
   quadraticBezier!: BABYLON.Curve3
   curDistance = 0
   gapPerFrame = 0.01
-  frameRate = 0.05
-  isLoopAnim = false
+  frameRate = 0.01
   prefixVisibleDistanceRate = 0.7
+  gsapAnim!: gsap.core.Timeline
 
   constructor({
     boxWidth,
@@ -30,24 +29,18 @@ export class ArrowBox {
     this.boxLength = boxLength
   }
 
-  startAnim() {
-    this.isLoopAnim = true
-    this.loopAnim()
-  }
-
-  async stopAnim() {
-    this.isLoopAnim = false
-    await delay(2 * this.frameRate)
+  stopAnim() {
+    this.gsapAnim?.kill()
     this.root.visibility = 0
   }
 
-  setCurve3(curve3: BABYLON.Curve3) {
+  setCurve3AndStartAnim(curve3: BABYLON.Curve3) {
     this.quadraticBezier = curve3
     this.startAnim()
   }
 
-  async loopAnim() {
-    if (!this.isLoopAnim || !this.quadraticBezier) {
+  async startAnim() {
+    if (!this.quadraticBezier) {
       return
     }
 
@@ -62,10 +55,11 @@ export class ArrowBox {
     const curPos = curvePointArr[curPointIndex]
     const ease = 'none'
     const visibility = curveLength - this.curDistance > this.boxLength ? Math.min(this.curDistance / (curveLength * this.prefixVisibleDistanceRate), 1) : 0
-    await gsap.timeline()
+    this.gsapAnim = gsap.timeline()
       .to(this.root.rotationQuaternion, {x: curQuat.x, y: curQuat.y, z: curQuat.z, w: curQuat.w, duration: this.frameRate, ease})
       .to(this.root.position, {x: curPos.x, y: curPos.y, z: curPos.z, duration: this.frameRate, ease}, 0)
       .to(this.root, {visibility, duration: this.frameRate, ease}, this.frameRate)
-    this.loopAnim()
+    await this.gsapAnim
+    this.startAnim()
   }
 }
