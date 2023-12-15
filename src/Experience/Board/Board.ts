@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs'
 
 import {LAYER_PICK_Z, LAYER_SLOT_Z} from '../../utils/constants'
 
+import {Arrow} from '../Utils/Arrow/Arrow'
 import {Cards} from './Cards'
 import {EmptySlot} from './EmptySlot'
 import {Experience} from '../Experience'
@@ -21,6 +22,7 @@ export class Board {
   cards
   leftSidebar
   wolf
+  arrow
   size = 10
   slotWidth = 0.471
   slotHeight = 0.77
@@ -72,6 +74,9 @@ export class Board {
 
     // Wolf
     this.wolf = new Wolf()
+
+    // Arrow
+    this.arrow = new Arrow({})
   }
 
   update() {
