@@ -62,17 +62,14 @@ export class Arrow {
       }))
     }
 
-    this.arrowBoxArr.forEach(async (arrowBox: ArrowBox, index: number) => {
+    this.arrowBoxArr.forEach(async (arrowBox: ArrowBox, index: number) => { // Update arrow boxes' animation
+      arrowBox.stopAnim()
+
       if (index < visibleBoxCount) {
-        arrowBox.stopAnim()
         arrowBox.curDistance = index * (this.boxLength + this.gap)
         arrowBox.setCurve3AndStartAnim(curve)
       }
     })
-
-    for (let i = visibleBoxCount; i < this.arrowBoxArr.length; i++) { // Stop unnecessary boxes' animation
-      this.arrowBoxArr[i].stopAnim()
-    }
 
     // Set arrow head
     if (!this.arrowHead) {
