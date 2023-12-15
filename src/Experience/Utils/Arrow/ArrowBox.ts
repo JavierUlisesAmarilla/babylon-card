@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
-import gsap from 'gsap'
+import {delay} from '../../../utils/common'
 
 export class ArrowBox {
   root
   quadraticBezier
-  boxWidth
-  boxLength
-  boxDepth
   curDistance
   gapPerFrame = 0.01
-  animIntervalIndex!: number
+  frameRate = 0.01
+  isLoopAnim = false
 
   constructor({
     quadraticBezier,
@@ -31,29 +29,32 @@ export class ArrowBox {
     this.root = BABYLON.CreateBox('arrowBox', {width: boxWidth, height: boxLength, depth: boxDepth, faceColors: [color4, color4, color4, color4, color4, color4]})
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
     this.quadraticBezier = quadraticBezier
-    this.boxWidth = boxWidth
-    this.boxLength = boxLength
-    this.boxDepth = boxDepth
     this.curDistance = curDistance
+    this.startAnim()
+  }
+
+  startAnim() {
+    this.isLoopAnim = true
     this.loopAnim()
   }
 
   async loopAnim() {
+    if (!this.isLoopAnim) {
+      false
+    }
+
     const curvePointArr = this.quadraticBezier.getPoints()
     const curveLength = this.quadraticBezier.length()
     const curvePath3d = new BABYLON.Path3D(curvePointArr)
     const curveTangents = curvePath3d.getTangents()
     this.curDistance = (this.curDistance + this.gapPerFrame) % curveLength
     const curPointIndex = Math.ceil(this.curDistance * curvePointArr.length / curveLength) % curvePointArr.length
-    const curPoint = curvePointArr[curPointIndex]
     const quatRes = BABYLON.Quaternion.Zero()
     BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y, curveTangents[curPointIndex], quatRes)
-    const posDuration = curPointIndex ? 0.01 : 0
-    const rotDuration = curPointIndex ? 0.005 : 0
-    const ease = 'none'
-    const gsapAnim = gsap.timeline().to(this.root.rotationQuaternion, {x: quatRes.x, y: quatRes.y, z: quatRes.z, w: quatRes.w, duration: rotDuration, ease})
-      .to(this.root.position, {x: curPoint.x, y: curPoint.y, z: curPoint.z, duration: posDuration, ease}, 0)
-    await gsapAnim
+    const curPoint = curvePointArr[curPointIndex]
+    this.root.rotationQuaternion?.copyFrom(quatRes)
+    this.root.position.copyFrom(curPoint)
+    await delay(this.frameRate)
     this.loopAnim()
   }
 }

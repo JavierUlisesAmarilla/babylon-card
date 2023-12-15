@@ -20,7 +20,7 @@ export class Arrow {
     boxLength = 0.5,
     boxDepth = 0.05,
     gap = 0.1,
-    bulge = 0,
+    bulge = 0.2,
     color4 = new BABYLON.Color4(1, 0, 0, 1),
   }: {
     boxWidth?: number
