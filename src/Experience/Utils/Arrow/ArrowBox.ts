@@ -6,13 +6,13 @@ import gsap from 'gsap'
 
 export class ArrowBox {
   root
+  boxLength
   quadraticBezier!: BABYLON.Curve3
   curDistance = 0
   gapPerFrame = 0.01
   frameRate = 0.05
   isLoopAnim = false
-  maxVisibleDistanceRate = 0.7
-  minVisibleDistanceRate = 0.03
+  prefixVisibleDistanceRate = 0.7
 
   constructor({
     boxWidth,
@@ -27,6 +27,7 @@ export class ArrowBox {
   }) {
     this.root = BABYLON.CreateBox('arrowBox', {width: boxWidth, height: boxLength, depth: boxDepth, faceColors: [color4, color4, color4, color4, color4, color4]})
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
+    this.boxLength = boxLength
   }
 
   startAnim() {
@@ -59,20 +60,12 @@ export class ArrowBox {
     const curQuat = BABYLON.Quaternion.Zero()
     BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y, curveTangents[curPointIndex], curQuat)
     const curPos = curvePointArr[curPointIndex]
-    let curVisibility = 1
-
-    if (this.curDistance / curveLength < this.maxVisibleDistanceRate) {
-      curVisibility = Math.min(this.curDistance / (curveLength * this.maxVisibleDistanceRate), 1)
-    } else if (((curveLength - this.curDistance) / curveLength) < this.minVisibleDistanceRate) {
-      curVisibility = 0
-    }
-
     const ease = 'none'
+    const visibility = curveLength - this.curDistance > this.boxLength ? Math.min(this.curDistance / (curveLength * this.prefixVisibleDistanceRate), 1) : 0
     await gsap.timeline()
       .to(this.root.rotationQuaternion, {x: curQuat.x, y: curQuat.y, z: curQuat.z, w: curQuat.w, duration: this.frameRate, ease})
       .to(this.root.position, {x: curPos.x, y: curPos.y, z: curPos.z, duration: this.frameRate, ease}, 0)
-      .to(this.root, {visibility: curVisibility, duration: this.frameRate, ease}, 0)
-
+      .to(this.root, {visibility, duration: this.frameRate, ease}, this.frameRate)
     this.loopAnim()
   }
 }

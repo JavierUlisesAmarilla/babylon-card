@@ -23,7 +23,7 @@ export class Arrow {
     boxLength = 0.12,
     boxDepth = 0.005,
     gap = 0.02,
-    bulge = 0.5,
+    bulge = 0.2,
     color4 = new BABYLON.Color4(1, 0, 0, 1),
   }: {
     boxWidth?: number
@@ -41,6 +41,15 @@ export class Arrow {
     this.color4 = color4
     this.origin = new BABYLON.Vector3(-2, -2, -4 * boxDepth)
     this.target = new BABYLON.Vector3(-2, 2, -4 * boxDepth)
+
+    for (let i = 0; i < 100; i++) {
+      this.arrowBoxArr.push(new ArrowBox({
+        boxWidth: this.boxWidth,
+        boxLength: this.boxLength,
+        boxDepth: this.boxDepth,
+      }))
+    }
+
     this.reset()
   }
 
@@ -54,10 +63,8 @@ export class Arrow {
     const curveLen = curve.length()
     const visibleBoxCount = Math.ceil(curveLen / (this.boxLength + this.gap))
     const newBoxCount = visibleBoxCount - this.arrowBoxArr.length
-    let curDistance = this.getLastDistance()
 
     for (let i = 0; i < newBoxCount; i++) { // Add new boxes
-      curDistance = (curDistance + this.boxLength + this.gap) % curveLen
       this.arrowBoxArr.push(new ArrowBox({
         boxWidth: this.boxWidth,
         boxLength: this.boxLength,
@@ -67,7 +74,10 @@ export class Arrow {
 
     this.arrowBoxArr.forEach(async (arrowBox: ArrowBox, index: number) => {
       if (index < visibleBoxCount) {
-        await arrowBox.stopAnim()
+        if (arrowBox.curDistance) {
+          await arrowBox.stopAnim()
+        }
+
         arrowBox.curDistance = index * (this.boxLength + this.gap)
         arrowBox.setCurve3(curve)
       }
@@ -99,17 +109,5 @@ export class Arrow {
   setTarget(target: BABYLON.Vector3) {
     this.target.copyFrom(target)
     this.reset()
-  }
-
-  getLastDistance() {
-    let lastDistance = 0
-
-    this.arrowBoxArr.forEach((arrowBox: ArrowBox) => {
-      if (arrowBox.curDistance > lastDistance) {
-        lastDistance = arrowBox.curDistance
-      }
-    })
-
-    return lastDistance
   }
 }
