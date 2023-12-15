@@ -10,22 +10,22 @@ export class ArrowBox {
   gapPerFrame = 0.01
   frameRate = 0.01
   isLoopAnim = false
-  maxVisibleDistanceRate = 0.5
-  minVisibleDistanceRate = 0.1
+  maxVisibleDistanceRate = 0.7
+  minVisibleDistanceRate = 0.06
 
   constructor({
     quadraticBezier,
-    boxWidth = 0.5,
-    boxLength = 1,
-    boxDepth = 0.1,
-    curDistance = 0,
+    boxWidth,
+    boxLength,
+    boxDepth,
+    curDistance,
     color4 = new BABYLON.Color4(1, 0, 0, 1),
   }: {
     quadraticBezier: BABYLON.Curve3
-    boxWidth?: number
-    boxLength?: number
-    boxDepth?: number
-    curDistance?: number
+    boxWidth: number
+    boxLength: number
+    boxDepth: number
+    curDistance: number
     color4?: BABYLON.Color4
   }) {
     this.root = BABYLON.CreateBox('arrowBox', {width: boxWidth, height: boxLength, depth: boxDepth, faceColors: [color4, color4, color4, color4, color4, color4]})
@@ -64,8 +64,9 @@ export class ArrowBox {
     if (this.curDistance / curveLength < this.maxVisibleDistanceRate) {
       curVisibility = Math.min(this.curDistance / (curveLength * this.maxVisibleDistanceRate), 1)
     } else if (((curveLength - this.curDistance) / curveLength) < this.minVisibleDistanceRate) {
-      const desDistance = curveLength - this.curDistance
-      curVisibility = desDistance > 0 ? desDistance * this.minVisibleDistanceRate / desDistance : 0
+      // const desDistance = curveLength - this.curDistance
+      // curVisibility = desDistance > 0 ? desDistance * this.minVisibleDistanceRate / desDistance : 0
+      curVisibility = 0
     }
 
     const ease = 'none'

@@ -31,7 +31,7 @@ export class Board {
     this.experience = new Experience()
     this.scene = this.experience.scene
     this.drag = this.experience.drag
-    this.root = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size, sideOrientation: 2}, this.scene)
+    this.root = BABYLON.MeshBuilder.CreatePlane('board', {width: this.size, height: this.size}, this.scene)
     const material = new BABYLON.StandardMaterial('board')
     material.diffuseTexture = new BABYLON.Texture('assets/images/background.jpg')
     this.root.material = material
