@@ -6,27 +6,27 @@ export class ArrowHead {
   root
 
   constructor({
-    boxWidth,
-    boxLength,
-    boxDepth,
-    color4 = new BABYLON.Color4(1, 0, 0, 1),
+    width,
+    blockSize,
+    thickness,
+    color4,
   }: {
-    boxWidth: number
-    boxLength: number
-    boxDepth: number
-    color4?: BABYLON.Color4
+    width: number
+    blockSize: number
+    thickness: number
+    color4: BABYLON.Color4
   }) {
     this.root = new BABYLON.TransformNode(this.name)
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
 
-    const cylinder = BABYLON.MeshBuilder.CreateCylinder(this.name, {tessellation: 3, diameter: 2 * boxWidth, height: boxDepth, faceColors: [color4, color4, color4]})
+    const cylinder = BABYLON.MeshBuilder.CreateCylinder(this.name, {tessellation: 3, diameter: 2 * width, height: thickness, faceColors: [color4, color4, color4]})
     cylinder.parent = this.root
     cylinder.rotation.x = 0.5 * Math.PI
 
-    const boxHeight = boxLength - 2 * boxWidth
+    const boxHeight = blockSize - 2 * width
 
     if (boxHeight > 0) {
-      const box = BABYLON.CreateBox(this.name, {width: boxWidth, height: boxHeight, depth: boxDepth, faceColors: [color4, color4, color4, color4, color4, color4]})
+      const box = BABYLON.CreateBox(this.name, {width, height: boxHeight, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
       box.parent = this.root
       box.position.x = -1.7 * boxHeight
       box.rotation.z = 0.5 * Math.PI

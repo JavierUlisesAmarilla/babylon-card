@@ -5,12 +5,13 @@ import {ArrowBox} from './ArrowBox'
 import {ArrowHead} from './ArrowHead'
 
 export class Arrow {
-  boxWidth
-  boxLength
-  boxDepth
-  gap
+  width
+  blockSize
+  thickness
+  blockGap
   bulge
   color4
+  gradient
   origin
   target
   nbOfPoints = 1000
@@ -18,28 +19,31 @@ export class Arrow {
   arrowHead!: ArrowHead
 
   constructor({
-    boxWidth = 0.05,
-    boxLength = 0.12,
-    boxDepth = 0.005,
-    gap = 0.02,
+    width = 0.05,
+    blockSize = 0.12,
+    thickness = 0.005,
+    blockGap = 0.02,
     bulge = 0.2,
-    color4 = new BABYLON.Color4(1, 0, 0, 1),
+    color4 = new BABYLON.Color4(1, 0, 0, 0),
+    gradient = 0.7
   }: {
-    boxWidth?: number
-    boxLength?: number
-    boxDepth?: number
-    gap?: number
+    width?: number
+    blockSize?: number
+    thickness?: number
+    blockGap?: number
     bulge?: number
     color4?: BABYLON.Color4
+    gradient?: number
   }) {
-    this.boxWidth = boxWidth
-    this.boxLength = boxLength
-    this.boxDepth = boxDepth
-    this.gap = gap
+    this.width = width
+    this.blockSize = blockSize
+    this.thickness = thickness
+    this.blockGap = blockGap
     this.bulge = bulge
     this.color4 = color4
-    this.origin = new BABYLON.Vector3(-2, -2, -4 * boxDepth)
-    this.target = new BABYLON.Vector3(2, -2, -4 * boxDepth)
+    this.gradient = gradient
+    this.origin = new BABYLON.Vector3(-2, -2, -4 * thickness)
+    this.target = new BABYLON.Vector3(2, -2, -4 * thickness)
     this.reset()
   }
 
@@ -51,14 +55,16 @@ export class Arrow {
 
     // Set arrow boxes
     const curveLen = curve.length()
-    const visibleBoxCount = Math.ceil(curveLen / (this.boxLength + this.gap))
+    const visibleBoxCount = Math.ceil(curveLen / (this.blockSize + this.blockGap))
     const newBoxCount = visibleBoxCount - this.arrowBoxArr.length
 
     for (let i = 0; i < newBoxCount; i++) { // Add new boxes
       this.arrowBoxArr.push(new ArrowBox({
-        boxWidth: this.boxWidth,
-        boxLength: this.boxLength,
-        boxDepth: this.boxDepth,
+        width: this.width,
+        blockSize: this.blockSize,
+        thickness: this.thickness,
+        color4: this.color4,
+        gradient: this.gradient,
       }))
     }
 
@@ -66,7 +72,7 @@ export class Arrow {
       arrowBox.stopAnim()
 
       if (index < visibleBoxCount) {
-        arrowBox.curDistance = index * (this.boxLength + this.gap)
+        arrowBox.curDistance = index * (this.blockSize + this.blockGap)
         arrowBox.setCurve3AndStartAnim(curve)
       }
     })
@@ -74,9 +80,10 @@ export class Arrow {
     // Set arrow head
     if (!this.arrowHead) {
       this.arrowHead = new ArrowHead({
-        boxWidth: this.boxWidth,
-        boxLength: this.boxLength,
-        boxDepth: this.boxDepth,
+        width: this.width,
+        blockSize: this.blockSize,
+        thickness: this.thickness,
+        color4: this.color4,
       })
     }
 
