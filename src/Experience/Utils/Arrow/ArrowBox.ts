@@ -68,8 +68,6 @@ export class ArrowBox {
     if (this.curDistance / curveLength < this.maxVisibleDistanceRate) {
       curVisibility = Math.min(this.curDistance / (curveLength * this.maxVisibleDistanceRate), 1)
     } else if (((curveLength - this.curDistance) / curveLength) < this.minVisibleDistanceRate) {
-      // const desDistance = curveLength - this.curDistance
-      // curVisibility = desDistance > 0 ? desDistance * this.minVisibleDistanceRate / desDistance : 0
       curVisibility = 0
     }
 
