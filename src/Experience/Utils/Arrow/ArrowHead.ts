@@ -4,16 +4,13 @@ import * as BABYLON from 'babylonjs'
 export class ArrowHead {
   name = 'arrowHead'
   root
-  quadraticBezier
 
   constructor({
-    quadraticBezier,
     boxWidth,
     boxLength,
     boxDepth,
     color4 = new BABYLON.Color4(1, 0, 0, 1),
   }: {
-    quadraticBezier: BABYLON.Curve3
     boxWidth: number
     boxLength: number
     boxDepth: number
@@ -21,7 +18,6 @@ export class ArrowHead {
   }) {
     this.root = new BABYLON.TransformNode(this.name)
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
-    this.quadraticBezier = quadraticBezier
 
     const cylinder = BABYLON.MeshBuilder.CreateCylinder(this.name, {tessellation: 3, diameter: 2 * boxWidth, height: boxDepth, faceColors: [color4, color4, color4]})
     cylinder.parent = this.root
@@ -35,22 +31,15 @@ export class ArrowHead {
       box.position.x = -boxHeight
       box.rotation.z = 0.5 * Math.PI
     }
-
-    this.reset()
   }
 
-  reset() {
-    const curvePointArr = this.quadraticBezier.getPoints()
+  setCurve3(curve3: BABYLON.Curve3) {
+    const curvePointArr = curve3.getPoints()
     const curvePath3d = new BABYLON.Path3D(curvePointArr)
     const curveTangents = curvePath3d.getTangents()
     this.root.position.copyFrom(curvePointArr[curvePointArr.length - 1])
     const curQuat = BABYLON.Quaternion.Zero()
     BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.X, curveTangents[curveTangents.length - 1], curQuat)
     this.root.rotationQuaternion?.copyFrom(curQuat)
-  }
-
-  setCurve3(curve3: BABYLON.Curve3) {
-    this.quadraticBezier = curve3
-    this.reset()
   }
 }

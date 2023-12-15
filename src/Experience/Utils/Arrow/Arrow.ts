@@ -3,6 +3,7 @@ import * as BABYLON from 'babylonjs'
 
 import {ArrowBox} from './ArrowBox'
 import {ArrowHead} from './ArrowHead'
+import {delay} from '../../../utils/common'
 
 export class Arrow {
   boxWidth
@@ -18,9 +19,9 @@ export class Arrow {
   arrowHead!: ArrowHead
 
   constructor({
-    boxWidth = 0.1,
-    boxLength = 0.25,
-    boxDepth = 0.01,
+    boxWidth = 0.05,
+    boxLength = 0.12,
+    boxDepth = 0.005,
     gap = 0.02,
     bulge = 0.5,
     color4 = new BABYLON.Color4(1, 0, 0, 1),
@@ -43,7 +44,7 @@ export class Arrow {
     this.reset()
   }
 
-  reset() {
+  async reset() {
     // Generate quadratic bezier
     const middle = BABYLON.Vector3.Lerp(this.origin, this.target, 0.5)
     middle.z -= this.bulge
@@ -58,33 +59,36 @@ export class Arrow {
     for (let i = 0; i < newBoxCount; i++) { // Add new boxes
       curDistance = (curDistance + this.boxLength + this.gap) % curveLen
       this.arrowBoxArr.push(new ArrowBox({
-        quadraticBezier: curve,
         boxWidth: this.boxWidth,
         boxLength: this.boxLength,
         boxDepth: this.boxDepth,
-        curDistance,
       }))
     }
 
-    for (let i = 0; i < visibleBoxCount; i++) { // Update visible boxes' curve
-      this.arrowBoxArr[i].setCurve3(curve)
-    }
+    this.arrowBoxArr.forEach(async (arrowBox: ArrowBox, index: number) => {
+      if (index < visibleBoxCount) {
+        await arrowBox.stopAnim()
+        arrowBox.curDistance = index * (this.boxLength + this.gap)
+        arrowBox.setCurve3(curve)
+      }
+    })
 
     for (let i = visibleBoxCount; i < this.arrowBoxArr.length; i++) { // Stop unnecessary boxes' animation
       this.arrowBoxArr[i].stopAnim()
     }
 
+    await delay(0.05)
+
     // Set arrow head
-    if (this.arrowHead) {
-      this.arrowHead.setCurve3(curve)
-    } else {
+    if (!this.arrowHead) {
       this.arrowHead = new ArrowHead({
-        quadraticBezier: curve,
         boxWidth: this.boxWidth,
         boxLength: this.boxLength,
         boxDepth: this.boxDepth,
       })
     }
+
+    this.arrowHead.setCurve3(curve)
   }
 
   setOrigin(origin: BABYLON.Vector3) {

@@ -1,38 +1,32 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
+import {delay} from '../../../utils/common'
 import gsap from 'gsap'
 
 export class ArrowBox {
   root
-  quadraticBezier
-  curDistance
+  quadraticBezier!: BABYLON.Curve3
+  curDistance = 0
   gapPerFrame = 0.01
-  frameRate = 0.01
+  frameRate = 0.05
   isLoopAnim = false
   maxVisibleDistanceRate = 0.7
-  minVisibleDistanceRate = 0.06
+  minVisibleDistanceRate = 0.03
 
   constructor({
-    quadraticBezier,
     boxWidth,
     boxLength,
     boxDepth,
-    curDistance,
     color4 = new BABYLON.Color4(1, 0, 0, 1),
   }: {
-    quadraticBezier: BABYLON.Curve3
     boxWidth: number
     boxLength: number
     boxDepth: number
-    curDistance: number
     color4?: BABYLON.Color4
   }) {
     this.root = BABYLON.CreateBox('arrowBox', {width: boxWidth, height: boxLength, depth: boxDepth, faceColors: [color4, color4, color4, color4, color4, color4]})
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
-    this.quadraticBezier = quadraticBezier
-    this.curDistance = curDistance
-    this.startAnim()
   }
 
   startAnim() {
@@ -40,18 +34,20 @@ export class ArrowBox {
     this.loopAnim()
   }
 
-  stopAnim() {
+  async stopAnim() {
     this.isLoopAnim = false
+    await delay(2 * this.frameRate)
     this.root.visibility = 0
   }
 
   setCurve3(curve3: BABYLON.Curve3) {
     this.quadraticBezier = curve3
+    this.startAnim()
   }
 
   async loopAnim() {
-    if (!this.isLoopAnim) {
-      false
+    if (!this.isLoopAnim || !this.quadraticBezier) {
+      return
     }
 
     const curvePointArr = this.quadraticBezier.getPoints()
