@@ -45,6 +45,10 @@ export class ArrowBox {
     this.root.visibility = 0
   }
 
+  setCurve3(curve3: BABYLON.Curve3) {
+    this.quadraticBezier = curve3
+  }
+
   async loopAnim() {
     if (!this.isLoopAnim) {
       false

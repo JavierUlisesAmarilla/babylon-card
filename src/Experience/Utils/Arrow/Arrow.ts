@@ -39,7 +39,7 @@ export class Arrow {
     this.bulge = bulge
     this.color4 = color4
     this.origin = new BABYLON.Vector3(-2, -2, -4 * boxDepth)
-    this.target = new BABYLON.Vector3(0, 0, -4 * boxDepth)
+    this.target = new BABYLON.Vector3(-2, 2, -4 * boxDepth)
     this.reset()
   }
 
@@ -72,13 +72,17 @@ export class Arrow {
       }))
     }
 
+    for (let i = 0; i < visibleBoxCount; i++) {
+      this.arrowBoxArr[i].setCurve3(curve)
+    }
+
     for (let i = visibleBoxCount; i < this.arrowBoxArr.length; i++) { // Stop unnecessary boxes' animation
       this.arrowBoxArr[i].stopAnim()
     }
 
     // Set arrow head
     if (this.arrowHead) {
-      // 
+      // TODO
     } else {
       this.arrowHead = new ArrowHead({
         quadraticBezier: curve,

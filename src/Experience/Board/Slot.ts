@@ -31,5 +31,6 @@ export class Slot {
   onPick(e: BABYLON.ActionEvent) {
     const pickedPoint = e.additionalData.pickedPoint
     this.experience.board.wolf.moveTo(pickedPoint)
+    this.experience.board.arrow.setTarget(pickedPoint)
   }
 }

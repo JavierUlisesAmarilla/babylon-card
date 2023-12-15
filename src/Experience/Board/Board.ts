@@ -86,5 +86,6 @@ export class Board {
   onPick(e: BABYLON.ActionEvent) {
     const pickedPoint = e.additionalData.pickedPoint
     this.wolf.moveTo(pickedPoint)
+    this.arrow.setTarget(pickedPoint)
   }
 }
