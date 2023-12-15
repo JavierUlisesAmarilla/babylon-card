@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
-import {delay} from '../../../utils/common'
+import gsap from 'gsap'
 
 export class ArrowBox {
   root
@@ -10,6 +10,8 @@ export class ArrowBox {
   gapPerFrame = 0.01
   frameRate = 0.01
   isLoopAnim = false
+  maxVisibleDistanceRate = 0.5
+  minVisibleDistanceRate = 0.1
 
   constructor({
     quadraticBezier,
@@ -38,6 +40,11 @@ export class ArrowBox {
     this.loopAnim()
   }
 
+  stopAnim() {
+    this.isLoopAnim = false
+    this.root.visibility = 0
+  }
+
   async loopAnim() {
     if (!this.isLoopAnim) {
       false
@@ -49,12 +56,24 @@ export class ArrowBox {
     const curveTangents = curvePath3d.getTangents()
     this.curDistance = (this.curDistance + this.gapPerFrame) % curveLength
     const curPointIndex = Math.ceil(this.curDistance * curvePointArr.length / curveLength) % curvePointArr.length
-    const quatRes = BABYLON.Quaternion.Zero()
-    BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y, curveTangents[curPointIndex], quatRes)
-    const curPoint = curvePointArr[curPointIndex]
-    this.root.rotationQuaternion?.copyFrom(quatRes)
-    this.root.position.copyFrom(curPoint)
-    await delay(this.frameRate)
+    const curQuat = BABYLON.Quaternion.Zero()
+    BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y, curveTangents[curPointIndex], curQuat)
+    const curPos = curvePointArr[curPointIndex]
+    let curVisibility = 1
+
+    if (this.curDistance / curveLength < this.maxVisibleDistanceRate) {
+      curVisibility = Math.min(this.curDistance / (curveLength * this.maxVisibleDistanceRate), 1)
+    } else if (((curveLength - this.curDistance) / curveLength) < this.minVisibleDistanceRate) {
+      const desDistance = curveLength - this.curDistance
+      curVisibility = desDistance > 0 ? desDistance * this.minVisibleDistanceRate / desDistance : 0
+    }
+
+    const ease = 'none'
+    await gsap.timeline()
+      .to(this.root.rotationQuaternion, {x: curQuat.x, y: curQuat.y, z: curQuat.z, w: curQuat.w, duration: this.frameRate, ease})
+      .to(this.root.position, {x: curPos.x, y: curPos.y, z: curPos.z, duration: this.frameRate, ease}, 0)
+      .to(this.root, {visibility: curVisibility, duration: this.frameRate, ease}, 0)
+
     this.loopAnim()
   }
 }

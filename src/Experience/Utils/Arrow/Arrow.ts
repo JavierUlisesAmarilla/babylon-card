@@ -38,21 +38,16 @@ export class Arrow {
     this.color4 = color4
     this.origin = new BABYLON.Vector3(-2, 0, -1)
     this.target = new BABYLON.Vector3(2, 0, -1)
-    this.init()
+    this.reset()
   }
 
-  init() {
-    this.setArrowBoxes()
-  }
-
-  setArrowBoxes() {
+  reset() {
     const middle = BABYLON.Vector3.Lerp(this.origin, this.target, 0.5)
     middle.z -= this.bulge
     const curve = BABYLON.Curve3.CreateQuadraticBezier(this.origin, middle, this.target, this.nbOfPoints)
     const curveLen = curve.length()
     const visibleBoxCount = Math.ceil(curveLen / (this.boxLength + this.gap))
     const newBoxCount = visibleBoxCount - this.arrowBoxArr.length
-    console.log('Arrow#setArrowBoxes: newBoxCount: ', newBoxCount)
     let curDistance = 0
 
     const setCurDistance = () => {
@@ -71,7 +66,5 @@ export class Arrow {
         curDistance,
       }))
     }
-
-    console.log('Arrow#setArrowBoxes: this.arrowBoxArr: ', this.arrowBoxArr)
   }
 }
