@@ -53,16 +53,10 @@ export class Arrow {
     const curveLen = curve.length()
     const visibleBoxCount = Math.ceil(curveLen / (this.boxLength + this.gap))
     const newBoxCount = visibleBoxCount - this.arrowBoxArr.length
-    let curDistance = 0
-
-    const setCurDistance = () => {
-      if (this.arrowBoxArr.length) {
-        curDistance = (this.arrowBoxArr[this.arrowBoxArr.length - 1].curDistance + this.boxLength + this.gap) % curveLen
-      }
-    }
+    let curDistance = this.getLastDistance()
 
     for (let i = 0; i < newBoxCount; i++) { // Add new boxes
-      setCurDistance()
+      curDistance = (curDistance + this.boxLength + this.gap) % curveLen
       this.arrowBoxArr.push(new ArrowBox({
         quadraticBezier: curve,
         boxWidth: this.boxWidth,
@@ -101,5 +95,17 @@ export class Arrow {
   setTarget(target: BABYLON.Vector3) {
     this.target.copyFrom(target)
     this.reset()
+  }
+
+  getLastDistance() {
+    let lastDistance = 0
+
+    this.arrowBoxArr.forEach((arrowBox: ArrowBox) => {
+      if (arrowBox.curDistance > lastDistance) {
+        lastDistance = arrowBox.curDistance
+      }
+    })
+
+    return lastDistance
   }
 }
