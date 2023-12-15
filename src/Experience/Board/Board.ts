@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import {LAYER_PICK_Z, LAYER_SLOT_Z} from '../../utils/constants'
+import {GAP, LAYER_PICK_Z, LAYER_SLOT_Z} from '../../utils/constants'
 
 import {Arrow} from '../Utils/Arrow/Arrow'
 import {Cards} from './Cards'
@@ -86,6 +86,7 @@ export class Board {
   onPick(e: BABYLON.ActionEvent) {
     const pickedPoint = e.additionalData.pickedPoint
     this.wolf.moveTo(pickedPoint)
+    pickedPoint.z -= GAP
     this.arrow.setTarget(pickedPoint)
   }
 }

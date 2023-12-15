@@ -28,7 +28,7 @@ export class ArrowHead {
     if (boxHeight > 0) {
       const box = BABYLON.CreateBox(this.name, {width: boxWidth, height: boxHeight, depth: boxDepth, faceColors: [color4, color4, color4, color4, color4, color4]})
       box.parent = this.root
-      box.position.x = -boxHeight
+      box.position.x = -1.7 * boxHeight
       box.rotation.z = 0.5 * Math.PI
     }
   }

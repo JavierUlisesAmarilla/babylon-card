@@ -40,15 +40,6 @@ export class Arrow {
     this.color4 = color4
     this.origin = new BABYLON.Vector3(-2, -2, -4 * boxDepth)
     this.target = new BABYLON.Vector3(2, -2, -4 * boxDepth)
-
-    for (let i = 0; i < 100; i++) {
-      this.arrowBoxArr.push(new ArrowBox({
-        boxWidth: this.boxWidth,
-        boxLength: this.boxLength,
-        boxDepth: this.boxDepth,
-      }))
-    }
-
     this.reset()
   }
 
