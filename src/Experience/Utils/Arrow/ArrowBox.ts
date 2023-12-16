@@ -35,6 +35,7 @@ export class ArrowBox {
     this.root = BABYLON.CreateBox(this.name, {width, height: blockSize, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
     this.root.position.z = 100
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
+    this.root.isPickable = false
     this.blockSize = blockSize
     this.gradient = gradient
     this.opacity = opacity

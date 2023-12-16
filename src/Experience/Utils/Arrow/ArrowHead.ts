@@ -28,6 +28,7 @@ export class ArrowHead {
     const cylinder = BABYLON.MeshBuilder.CreateCylinder(this.name, {tessellation: 3, diameter: 2 * width, height: thickness, faceColors: [color4, color4, color4]})
     cylinder.parent = this.root
     cylinder.rotation.x = 0.5 * Math.PI
+    cylinder.isPickable = false
 
     const boxHeight = blockSize - 2 * width
 
@@ -36,6 +37,7 @@ export class ArrowHead {
       box.parent = this.root
       box.position.x = -1.7 * boxHeight
       box.rotation.z = 0.5 * Math.PI
+      box.isPickable = false
     }
   }
 
