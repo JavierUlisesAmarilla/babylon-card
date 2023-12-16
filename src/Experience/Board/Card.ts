@@ -250,6 +250,7 @@ export class Card {
 
     await this.experience.board.cards.animShowOnlyOneCard(this.index)
 
+    this.root.setParent(this.experience.ui.root)
     const zoomInTarget = [0, 0, 1.5]
     await gsap.timeline().to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration, ease})
 
@@ -362,6 +363,7 @@ export class Card {
   async animToggleShowInfo() {
     const duration = 0.2
     const ease = 'power1.inOut'
+    this.root.setParent(this.experience.ui.root)
 
     if (this.isShowInfo) {
       await this.experience.board.leftSidebar.animHide()
@@ -444,6 +446,7 @@ export class Card {
   }
 
   async onPickDown() {
+    this.root.setParent(this.experience.board.root)
     await delay(0.05)
     console.log('Card#onPickDown')
     this.isPointerDown = true
