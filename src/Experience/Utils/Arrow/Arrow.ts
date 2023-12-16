@@ -106,7 +106,7 @@ export class Arrow {
   }
 
   animToTarget(target: BABYLON.Vector3) {
-    const duration = 2
+    const duration = 0.2
     const ease = 'none'
     gsap.timeline().to(this.target, {x: target.x, y: target.y, z: target.z, duration, ease, onUpdate: () => this.reset()})
   }

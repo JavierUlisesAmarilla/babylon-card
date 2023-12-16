@@ -46,7 +46,7 @@ export class ArrowBox {
     this.startAnim()
   }
 
-  async startAnim() {
+  startAnim() {
     if (!this.quadraticBezier) {
       return
     }
@@ -65,8 +65,6 @@ export class ArrowBox {
     this.gsapAnim = gsap.timeline()
       .to(this.root.rotationQuaternion, {x: curQuat.x, y: curQuat.y, z: curQuat.z, w: curQuat.w, duration: this.frameRate, ease})
       .to(this.root.position, {x: curPos.x, y: curPos.y, z: curPos.z, duration: this.frameRate, ease}, 0)
-      .to(this.root, {visibility, duration: this.frameRate, ease}, this.frameRate)
-    await this.gsapAnim
-    this.startAnim()
+      .to(this.root, {visibility, duration: this.frameRate, ease, onComplete: () => {this.startAnim()}}, this.frameRate)
   }
 }
