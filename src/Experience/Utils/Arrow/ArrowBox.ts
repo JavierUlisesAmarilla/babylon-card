@@ -7,6 +7,7 @@ export class ArrowBox {
   root
   blockSize
   gradient
+  opacity
   quadraticBezier!: BABYLON.Curve3
   curDistance = 0
   gapPerFrame = 0.01
@@ -19,17 +20,20 @@ export class ArrowBox {
     thickness,
     color4,
     gradient,
+    opacity,
   }: {
     width: number
     blockSize: number
     thickness: number
     color4: BABYLON.Color4
     gradient: number
+    opacity: number
   }) {
     this.root = BABYLON.CreateBox('arrowBox', {width, height: blockSize, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
     this.blockSize = blockSize
     this.gradient = gradient
+    this.opacity = opacity
   }
 
   stopAnim() {
@@ -57,7 +61,7 @@ export class ArrowBox {
     BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y, curveTangents[curPointIndex], curQuat)
     const curPos = curvePointArr[curPointIndex]
     const ease = 'none'
-    const visibility = curveLength - this.curDistance > this.blockSize ? Math.min(this.curDistance / (curveLength * this.gradient), 1) : 0
+    const visibility = curveLength - this.curDistance > this.blockSize ? Math.min(this.curDistance / (curveLength * this.gradient), this.opacity) : 0
     this.gsapAnim = gsap.timeline()
       .to(this.root.rotationQuaternion, {x: curQuat.x, y: curQuat.y, z: curQuat.z, w: curQuat.w, duration: this.frameRate, ease})
       .to(this.root.position, {x: curPos.x, y: curPos.y, z: curPos.z, duration: this.frameRate, ease}, 0)

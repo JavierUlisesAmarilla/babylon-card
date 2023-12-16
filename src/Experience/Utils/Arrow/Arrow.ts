@@ -12,6 +12,7 @@ export class Arrow {
   bulge
   color4
   gradient
+  opacity
   origin
   target
   nbOfPoints = 1000
@@ -25,7 +26,8 @@ export class Arrow {
     blockGap = 0.02,
     bulge = 0.2,
     color4 = new BABYLON.Color4(1, 0, 0, 0),
-    gradient = 0.7
+    gradient = 0.7,
+    opacity = 0.7
   }: {
     width?: number
     blockSize?: number
@@ -34,6 +36,7 @@ export class Arrow {
     bulge?: number
     color4?: BABYLON.Color4
     gradient?: number
+    opacity?: number
   }) {
     this.width = width
     this.blockSize = blockSize
@@ -42,6 +45,7 @@ export class Arrow {
     this.bulge = bulge
     this.color4 = color4
     this.gradient = gradient
+    this.opacity = opacity
     this.origin = new BABYLON.Vector3(-2, -2, -4 * thickness)
     this.target = new BABYLON.Vector3(2, -2, -4 * thickness)
     this.reset()
@@ -65,6 +69,7 @@ export class Arrow {
         thickness: this.thickness,
         color4: this.color4,
         gradient: this.gradient,
+        opacity: this.opacity,
       }))
     }
 
