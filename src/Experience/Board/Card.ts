@@ -266,7 +266,6 @@ export class Card {
     await delay(duration)
 
     this.root.setParent(this.experience.board.root)
-
     const lookTarget = this.root.position.clone()
     lookTarget.z -= 1
     const lookQuat = getLookQuat(this.root.position, lookTarget)
@@ -366,12 +365,10 @@ export class Card {
 
     if (this.isShowInfo) {
       await this.experience.board.leftSidebar.animHide()
-      this.root.setParent(this.experience.ui.root)
       await gsap.timeline()
         .to(this.root.position, {x: this.pickPrevPos.x, y: this.pickPrevPos.y, z: this.pickPrevPos.z, duration, ease})
         .to(this.root.rotationQuaternion, {x: this.prevLookQuat.x, y: this.prevLookQuat.y, z: this.prevLookQuat.z, w: this.prevLookQuat.w, duration, ease}, 0)
     } else {
-      this.root.setParent(this.experience.ui.root)
       this.pickPrevPos.copyFrom(this.root.position)
       const targetPos = new BABYLON.Vector3(0.3, 0, 1.5)
       const lookQuat = getLookQuat(targetPos.negate(), new BABYLON.Vector3(0, -0.5, 0))
@@ -423,7 +420,7 @@ export class Card {
   }
 
   async onPick() {
-    // console.log('Card#onPick')
+    console.log('Card#onPick')
     this.isPick = true
 
     if (!this.isAnimating) {
@@ -448,7 +445,7 @@ export class Card {
 
   async onPickDown() {
     await delay(0.05)
-    // console.log('Card#onPickDown')
+    console.log('Card#onPickDown')
     this.isPointerDown = true
 
     switch (this.curStep) {
@@ -468,7 +465,7 @@ export class Card {
       return
     }
 
-    // console.log('Card#onPickUp')
+    console.log('Card#onPickUp')
 
     switch (this.curStep) {
     case 'bottom':
