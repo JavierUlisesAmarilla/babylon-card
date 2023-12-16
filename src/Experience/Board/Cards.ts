@@ -1,11 +1,11 @@
 import * as BABYLON from 'babylonjs'
 
-import {BOARD_ANGLE_FACTOR, CARD_TITLE_ARR} from '../../utils/constants'
-
+import {CARD_TITLE_ARR} from '../../utils/constants'
 import {Card} from './Card'
 import {Experience} from '../Experience'
 
 export class Cards {
+  name = 'cards'
   experience
   root
   size = 10
@@ -16,8 +16,9 @@ export class Cards {
 
   constructor() {
     this.experience = new Experience()
-    this.root = new BABYLON.TransformNode('cards')
-    this.root.rotation.x = -Math.PI * BOARD_ANGLE_FACTOR
+    this.root = new BABYLON.TransformNode(this.name)
+    this.root.parent = this.experience.ui.root
+    this.root.position.y = 0.2 * this.cardHeight
     const middleX = 2
     const middleY = 1
     // return
@@ -29,7 +30,7 @@ export class Cards {
         name: `card${i}`,
         width: this.cardWidth,
         height: this.cardHeight,
-        position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (middleY - y) * (this.cardHeight + this.cardGap) - 1, -2),
+        position: new BABYLON.Vector3((x - middleX) * (this.cardWidth + this.cardGap), (middleY - y) * (this.cardHeight + this.cardGap) - 1, 4),
         frontTextureUrl: `assets/images/avatars/(${i}).jpg`,
         backTextureUrl: `assets/images/cards/(${i}).webp`,
         tweakTimeout: Math.max(Math.random() * 1500, 800),

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
-import {BOARD_ANGLE_FACTOR} from '../utils/constants'
 import {Board} from './Board/Board'
 import {Drag} from './Utils/Drag'
 import {Highlight} from './Utils/Highlight'
 import {SlotPicker} from './Board/SlotPicker'
+import { Ui } from './Board/Ui'
 
 let instance: Experience
 
@@ -15,6 +15,7 @@ export class Experience {
   scene!: BABYLON.Scene
   camera!: BABYLON.ArcRotateCamera
   hemisphericLight!: BABYLON.HemisphericLight
+  ui!: Ui
   drag!: Drag
   slotPicker!: SlotPicker
   highlight!: Highlight
@@ -32,7 +33,7 @@ export class Experience {
     this.canvas = canvas
     this.engine = new BABYLON.Engine(this.canvas, true)
     this.scene = new BABYLON.Scene(this.engine)
-    this.camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI * (0.5 + BOARD_ANGLE_FACTOR), 5, new BABYLON.Vector3(0, 0, 0))
+    this.camera = new BABYLON.ArcRotateCamera('camera', -0.5 * Math.PI, 0.7 * Math.PI, 5, new BABYLON.Vector3(0, 0, 0))
     this.camera.attachControl(this.canvas, true)
     this.camera.target = new BABYLON.Vector3(0, -0.7, 0)
     this.hemisphericLight = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(-1, 0, 0), this.scene)
@@ -46,13 +47,14 @@ export class Experience {
     })
 
     // Assets
+    this.ui = new Ui()
     this.drag = new Drag()
     this.slotPicker = new SlotPicker()
     this.highlight = new Highlight()
     this.board = new Board()
 
     // Utils
-    // new BABYLON.Debug.AxesViewer(this.scene, 1)
+    new BABYLON.Debug.AxesViewer(this.scene, 1)
   }
 
   update() {
