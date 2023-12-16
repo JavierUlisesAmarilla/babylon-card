@@ -36,3 +36,24 @@ export const delay = (s: number) => {
   if (s <= 0) return Promise.resolve()
   return new Promise((resolve) => setTimeout(resolve, s * 1e3))
 }
+
+export const showPath3D = (path3d: BABYLON.Path3D, size?: number) => {
+  size = size || 0.5
+  const curve = path3d.getCurve()
+  const points = path3d.getPoints()
+  const tangents = path3d.getTangents()
+  const normals = path3d.getNormals()
+  const binormals = path3d.getBinormals()
+  let lineTangents, lineNormals, lineBinormals
+  const lineCurve = BABYLON.CreateLines('lineCurve', {points})
+  lineCurve.color = BABYLON.Color3.Yellow()
+
+  for (let i = 0; i < curve.length; i++) {
+    lineTangents = BABYLON.CreateLines('lineTangents' + i, {points: [curve[i], curve[i].add(tangents[i].scale(size))]})
+    lineNormals = BABYLON.CreateLines('lineNormals' + i, {points: [curve[i], curve[i].add(normals[i].scale(size))]})
+    lineBinormals = BABYLON.CreateLines('lineBinormals' + i, {points: [curve[i], curve[i].add(binormals[i].scale(size))]})
+    lineTangents.color = BABYLON.Color3.Red()
+    lineNormals.color = BABYLON.Color3.Green()
+    lineBinormals.color = BABYLON.Color3.Blue()
+  }
+}
