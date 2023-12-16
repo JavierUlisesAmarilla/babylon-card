@@ -26,7 +26,7 @@ export class Arrow {
     blockSize = 0.12,
     thickness = 0.005,
     blockGap = 0.02,
-    bulge = 0.2,
+    bulge = 0.4,
     color4 = new BABYLON.Color4(1, 0, 0, 0),
     gradient = 0.7,
     opacity = 0.7
@@ -113,7 +113,7 @@ export class Arrow {
   }
 
   animToTarget(target: BABYLON.Vector3) {
-    const duration = 0.2
+    const duration = 1
     const ease = 'none'
     gsap.timeline().to(this.target, {x: target.x, y: target.y, z: target.z, duration, ease, onUpdate: () => this.reset()})
   }
