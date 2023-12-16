@@ -33,6 +33,6 @@ export class Slot {
     const pickedPoint = e.additionalData.pickedPoint
     this.experience.board.wolf.moveTo(pickedPoint)
     pickedPoint.z -= GAP
-    this.experience.board.arrow.animChangeOrigin(pickedPoint)
+    this.experience.board.arrow.setOrigin(pickedPoint)
   }
 }
