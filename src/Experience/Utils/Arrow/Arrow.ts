@@ -19,7 +19,7 @@ export class Arrow {
   nbOfPoints = 1000
   arrowBoxArr: ArrowBox[] = []
   arrowHead!: ArrowHead
-  frameRate = 0.1
+  frameRate = 0.01
 
   constructor({
     width = 0.05,
@@ -79,10 +79,11 @@ export class Arrow {
     }
 
     this.arrowBoxArr.forEach((arrowBox: ArrowBox, index: number) => { // Update arrow boxes' status
+      arrowBox.quadraticBezier = curve
+
       if (index < visibleBoxCount) {
         arrowBox.hide = false
         arrowBox.curDistance = index * (this.blockSize + this.blockGap)
-        arrowBox.quadraticBezier = curve
       } else {
         arrowBox.hide = true
       }
