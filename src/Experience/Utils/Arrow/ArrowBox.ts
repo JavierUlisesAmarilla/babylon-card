@@ -4,15 +4,16 @@ import * as BABYLON from 'babylonjs'
 import gsap from 'gsap'
 
 export class ArrowBox {
+  name = 'arrowBox'
   root
   blockSize
   gradient
   opacity
+  frameRate
   quadraticBezier!: BABYLON.Curve3
   curDistance = 0
   gapPerFrame = 0.01
-  frameRate = 0.01
-  gsapAnim!: gsap.core.Timeline
+  hide = false
 
   constructor({
     width,
@@ -21,6 +22,7 @@ export class ArrowBox {
     color4,
     gradient,
     opacity,
+    frameRate,
   }: {
     width: number
     blockSize: number
@@ -28,22 +30,15 @@ export class ArrowBox {
     color4: BABYLON.Color4
     gradient: number
     opacity: number
+    frameRate: number
   }) {
-    this.root = BABYLON.CreateBox('arrowBox', {width, height: blockSize, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
+    this.root = BABYLON.CreateBox(this.name, {width, height: blockSize, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
+    this.root.position.z = 100
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
     this.blockSize = blockSize
     this.gradient = gradient
     this.opacity = opacity
-  }
-
-  stopAnim() {
-    this.gsapAnim?.kill()
-    this.root.visibility = 0
-  }
-
-  setCurve3AndStartAnim(curve3: BABYLON.Curve3) {
-    this.quadraticBezier = curve3
-    this.startAnim()
+    this.frameRate = frameRate
   }
 
   startAnim() {
@@ -62,9 +57,36 @@ export class ArrowBox {
     const curPos = curvePointArr[curPointIndex]
     const ease = 'none'
     const visibility = curveLength - this.curDistance > this.blockSize ? Math.min(this.curDistance / (curveLength * this.gradient), this.opacity) : 0
-    this.gsapAnim = gsap.timeline()
-      .to(this.root.rotationQuaternion, {x: curQuat.x, y: curQuat.y, z: curQuat.z, w: curQuat.w, duration: this.frameRate, ease})
-      .to(this.root.position, {x: curPos.x, y: curPos.y, z: curPos.z, duration: this.frameRate, ease}, 0)
-      .to(this.root, {visibility, duration: this.frameRate, ease, onComplete: () => {this.startAnim()}}, this.frameRate)
+    gsap.timeline()
+      .to(this.root, {
+        visibility,
+        duration: this.frameRate,
+        ease,
+        onUpdate: () => {this.onUpdate()},
+      })
+      .to(this.root.rotationQuaternion, {
+        x: curQuat.x,
+        y: curQuat.y,
+        z: curQuat.z,
+        w: curQuat.w,
+        duration: this.frameRate,
+        ease,
+        onUpdate: () => {this.onUpdate()},
+      }, 0)
+      .to(this.root.position, {
+        x: curPos.x,
+        y: curPos.y,
+        z: curPos.z,
+        duration: this.frameRate,
+        ease,
+        onUpdate: () => {this.onUpdate()},
+        onComplete: () => {this.startAnim()},
+      }, 0)
+  }
+
+  onUpdate() {
+    if (this.hide) {
+      this.root.visibility = 0
+    }
   }
 }

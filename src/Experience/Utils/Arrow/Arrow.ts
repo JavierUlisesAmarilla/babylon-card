@@ -19,6 +19,7 @@ export class Arrow {
   nbOfPoints = 1000
   arrowBoxArr: ArrowBox[] = []
   arrowHead!: ArrowHead
+  frameRate = 0.1
 
   constructor({
     width = 0.05,
@@ -63,22 +64,27 @@ export class Arrow {
     const newBoxCount = visibleBoxCount - this.arrowBoxArr.length
 
     for (let i = 0; i < newBoxCount; i++) { // Add new boxes
-      this.arrowBoxArr.push(new ArrowBox({
+      const newArrowBox = new ArrowBox({
         width: this.width,
         blockSize: this.blockSize,
         thickness: this.thickness,
         color4: this.color4,
         gradient: this.gradient,
         opacity: this.opacity,
-      }))
+        frameRate: this.frameRate
+      })
+      newArrowBox.quadraticBezier = curve
+      newArrowBox.startAnim()
+      this.arrowBoxArr.push(newArrowBox)
     }
 
-    this.arrowBoxArr.forEach((arrowBox: ArrowBox, index: number) => { // Update arrow boxes' animation
-      arrowBox.stopAnim()
-
+    this.arrowBoxArr.forEach((arrowBox: ArrowBox, index: number) => { // Update arrow boxes' status
       if (index < visibleBoxCount) {
+        arrowBox.hide = false
         arrowBox.curDistance = index * (this.blockSize + this.blockGap)
-        arrowBox.setCurve3AndStartAnim(curve)
+        arrowBox.quadraticBezier = curve
+      } else {
+        arrowBox.hide = true
       }
     })
 
@@ -89,6 +95,7 @@ export class Arrow {
         blockSize: this.blockSize,
         thickness: this.thickness,
         color4: this.color4,
+        frameRate: 1.3 * this.frameRate
       })
     }
 
