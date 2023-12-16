@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 import * as earcut from 'earcut'
 
-import {BOARD_ANGLE_FACTOR, GAP, LAYER_CARD_Z, LAYER_PICK_Z, TEXT_DEPTH} from '../../utils/constants'
+import {GAP, LAYER_CARD_Z, LAYER_PICK_Z, TEXT_DEPTH} from '../../utils/constants'
 import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
 import {delay, getLookQuat, getRandomTarget} from '../../utils/common'
 import {dustCool, explodeCombat, lightCrawl} from '../../utils/sprite-animations'
@@ -288,16 +288,20 @@ export class Card {
   }
 
   async animPickFromSide() {
+    const duration = 0.15
+    const ease = 'circ.inOut'
+
+    await gsap.timeline().to(this.root.position, {z: LAYER_PICK_Z, duration, ease})
+
+    this.root.setParent(this.experience.ui.root)
+
     const lookTarget = this.root.position.clone()
-    lookTarget.y += 10 * BOARD_ANGLE_FACTOR * 2
     lookTarget.z += 10
     const lookQuat = getLookQuat(this.root.position, lookTarget)
     this.prevLookQuat.copyFrom(lookQuat)
-    const duration = 0.15
-    const ease = 'circ.inOut'
+
     await gsap.timeline()
-      .to(this.root.position, {z: LAYER_PICK_Z, duration, ease})
-      .to(this.root.position, {x: 0, y: -2.3, z: LAYER_PICK_Z, duration, ease}, duration)
+      .to(this.root.position, {x: 0, y: -1.05, z: 3.5, duration, ease}, duration)
       .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, duration)
       .to(this.frontTopText, {visibility: 1, duration: 0.5, ease}, 2 * duration)
       .to(this.frontBottomText, {visibility: 1, duration: 0.5, ease}, 2 * duration)
