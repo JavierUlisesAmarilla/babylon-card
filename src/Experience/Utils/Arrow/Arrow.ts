@@ -59,8 +59,7 @@ export class Arrow {
     const curve = BABYLON.Curve3.CreateQuadraticBezier(this.origin, middle, this.target, this.nbOfPoints)
 
     // Set arrow boxes
-    const curveLen = curve.length()
-    const visibleBoxCount = Math.ceil(curveLen / (this.blockSize + this.blockGap))
+    const visibleBoxCount = Math.ceil(curve.length() / (this.blockSize + this.blockGap))
     const newBoxCount = visibleBoxCount - this.arrowBoxArr.length
 
     for (let i = 0; i < newBoxCount; i++) { // Add new boxes
