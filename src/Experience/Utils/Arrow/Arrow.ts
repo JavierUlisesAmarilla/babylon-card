@@ -3,6 +3,7 @@ import * as BABYLON from 'babylonjs'
 
 import {ArrowBox} from './ArrowBox'
 import {ArrowHead} from './ArrowHead'
+import gsap from 'gsap'
 
 export class Arrow {
   width
@@ -51,7 +52,7 @@ export class Arrow {
     this.reset()
   }
 
-  async reset() {
+  reset() {
     // Generate quadratic bezier
     const middle = BABYLON.Vector3.Lerp(this.origin, this.target, 0.5)
     middle.z -= this.bulge
@@ -73,7 +74,7 @@ export class Arrow {
       }))
     }
 
-    this.arrowBoxArr.forEach(async (arrowBox: ArrowBox, index: number) => { // Update arrow boxes' animation
+    this.arrowBoxArr.forEach((arrowBox: ArrowBox, index: number) => { // Update arrow boxes' animation
       arrowBox.stopAnim()
 
       if (index < visibleBoxCount) {
@@ -103,5 +104,11 @@ export class Arrow {
   setTarget(target: BABYLON.Vector3) {
     this.target.copyFrom(target)
     this.reset()
+  }
+
+  animToTarget(target: BABYLON.Vector3) {
+    const duration = 2
+    const ease = 'none'
+    gsap.timeline().to(this.target, {x: target.x, y: target.y, z: target.z, duration, ease, onUpdate: () => this.reset()})
   }
 }
