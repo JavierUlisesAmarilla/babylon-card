@@ -70,7 +70,7 @@ export class Board {
     this.cards = new Cards()
 
     // Left sidebar
-    this.leftSidebar = new LeftSidebar({name: 'leftSidebar'})
+    this.leftSidebar = new LeftSidebar()
 
     // Wolf
     this.wolf = new Wolf()
