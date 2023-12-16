@@ -164,9 +164,9 @@ export class Card {
     this.tweak()
     this.reset()
 
-    this.experience.drag.on('pointerMove', (mesh: BABYLON.Mesh | undefined, diff: BABYLON.Vector3) => {
+    this.experience.drag.on('pointerMove', (mesh: BABYLON.Mesh | undefined, _diff: BABYLON.Vector3, curPos: BABYLON.Vector3) => {
       if (mesh?.name === name && this.isPointerDown && (this.curStep === 'bottom' || this.curStep === 'lay')) {
-        this.root.position.addInPlace(diff)
+        this.root.position.copyFrom(curPos)
       }
     })
   }
@@ -436,7 +436,6 @@ export class Card {
         await this.animPickFromSide()
         break
       case 'bottom':
-      case 'lay':
         await this.animToggleShowInfo()
         break
       }
