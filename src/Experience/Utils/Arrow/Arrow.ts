@@ -54,10 +54,7 @@ export class Arrow {
   }
 
   reset() {
-    // Generate quadratic bezier
-    const middle = BABYLON.Vector3.Lerp(this.origin, this.target, 0.5)
-    middle.z -= this.bulge
-    const curve = BABYLON.Curve3.CreateQuadraticBezier(this.origin, middle, this.target, this.nbOfPoints)
+    const curve = this.getQuadraticBezier()
 
     // Set arrow boxes
     const visibleBoxCount = Math.ceil(curve.length() / (this.blockSize + this.blockGap))
@@ -101,6 +98,24 @@ export class Arrow {
     }
 
     this.arrowHead.setCurve3(curve)
+  }
+
+  getQuadraticBezier() {
+    const middle = BABYLON.Vector3.Lerp(this.origin, this.target, 0.5)
+    middle.z -= this.bulge
+    let curve = BABYLON.Curve3.CreateQuadraticBezier(this.origin, middle, this.target, this.nbOfPoints)
+    const curvePointArr = curve.getPoints()
+    const curvePath3d = new BABYLON.Path3D(curvePointArr)
+    const curveTangents = curvePath3d.getTangents()
+
+    if (curveTangents.length) {
+      const blockLength = this.blockSize + this.blockGap
+      const additionalLength = blockLength - curve.length() % blockLength
+      const origin = this.origin.clone().add(curveTangents[0].negate().scale(additionalLength))
+      curve = BABYLON.Curve3.CreateQuadraticBezier(origin, middle, this.target, this.nbOfPoints)
+    }
+
+    return curve
   }
 
   setOrigin(origin: BABYLON.Vector3) {
