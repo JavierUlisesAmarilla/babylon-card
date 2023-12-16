@@ -75,9 +75,14 @@ export class Drag extends EventEmitter {
   onPointerMove() {
     const curPos = this.getGroundPosition()
 
-    if (this.startingPoint && this.currentMesh && curPos) {
-      const diff = curPos.subtract(this.startingPoint)
-      this.trigger('pointerMove', [this.currentMesh, diff])
+    if (curPos) {
+      let diff = BABYLON.Vector3.Zero()
+
+      if (this.startingPoint) {
+        diff = curPos.subtract(this.startingPoint)
+      }
+
+      this.trigger('pointerMove', [this.currentMesh, diff, curPos])
       this.startingPoint = curPos
     }
   }

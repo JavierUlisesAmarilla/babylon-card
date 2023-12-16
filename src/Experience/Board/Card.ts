@@ -160,8 +160,8 @@ export class Card {
     this.tweak()
     this.reset()
 
-    this.experience.drag.on('pointerMove', (root: BABYLON.Mesh, diff: BABYLON.Vector3) => {
-      if (root.name === name && this.isPointerDown && (this.curStep === 'bottom' || this.curStep === 'lay')) {
+    this.experience.drag.on('pointerMove', (mesh: BABYLON.Mesh | undefined, diff: BABYLON.Vector3) => {
+      if (mesh?.name === name && this.isPointerDown && (this.curStep === 'bottom' || this.curStep === 'lay')) {
         this.root.position.addInPlace(diff)
       }
     })

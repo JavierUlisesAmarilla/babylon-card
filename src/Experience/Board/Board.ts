@@ -77,6 +77,9 @@ export class Board {
 
     // Arrow
     this.arrow = new Arrow({})
+    this.drag.on('pointerMove', (_mesh: BABYLON.Mesh | undefined, _diff: BABYLON.Vector3, curPos: BABYLON.Vector3) => {
+      this.arrow.animChangeTarget(curPos)
+    })
   }
 
   update() {
@@ -87,7 +90,6 @@ export class Board {
     const pickedPoint = e.additionalData.pickedPoint
     this.wolf.moveTo(pickedPoint)
     pickedPoint.z -= GAP
-    // this.arrow.setTarget(pickedPoint)
-    this.arrow.animToTarget(pickedPoint)
+    this.arrow.animChangeOrigin(pickedPoint)
   }
 }
