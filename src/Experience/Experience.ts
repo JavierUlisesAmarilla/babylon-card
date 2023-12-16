@@ -54,7 +54,7 @@ export class Experience {
     this.board = new Board()
 
     // Utils
-    new BABYLON.Debug.AxesViewer(this.scene, 1)
+    // new BABYLON.Debug.AxesViewer(this.scene, 1)
   }
 
   update() {

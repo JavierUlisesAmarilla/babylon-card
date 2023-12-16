@@ -12,6 +12,7 @@ import gsap from 'gsap'
 
 export class Card {
   name
+  index
   experience
   root
   tweakTimeout
@@ -42,6 +43,7 @@ export class Card {
 
   constructor({
     name, // Should be unique
+    index,
     width,
     height,
     position,
@@ -53,6 +55,7 @@ export class Card {
     frontBottomTitle,
   }: {
     name: string
+    index: number
     width: number
     height: number
     position: BABYLON.Vector3
@@ -64,6 +67,7 @@ export class Card {
     frontBottomTitle?: string
   }) {
     this.name = name
+    this.index = index
     this.experience = new Experience()
     this.root = new BABYLON.TransformNode(name)
     this.root.position.copyFrom(position)
@@ -241,21 +245,13 @@ export class Card {
 
   async animSelectLevel() {
     this.clearTweak()
-
-    this.root.setParent(this.experience.board.root)
-    this.experience.board.cards.root.setEnabled(false)
-
-    const zoomInTarget = [0, -3, -2]
-    const lookTarget = this.root.position.clone()
-    lookTarget.z -= 1
-    const lookQuat = getLookQuat(this.root.position, lookTarget)
-    this.prevLookQuat.copyFrom(lookQuat)
-    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     const duration = 0.5
     const ease = 'circ.inOut'
-    await gsap.timeline()
-      .to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration, ease})
-      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
+
+    await this.experience.board.cards.animShowOnlyOneCard(this.index)
+
+    const zoomInTarget = [0, 0, 1.5]
+    await gsap.timeline().to(this.root.position, {x: zoomInTarget[0], y: zoomInTarget[1], z: zoomInTarget[2], duration, ease})
 
     const fx = AnimatedSprite.fromAtlasJsonURL('https://undroop-assets.web.app/confucius/rtfx-pngquant/fx/simple-energy-086-charge--radial--norsz.json', 30, 100, this.experience.scene)
     fx.isPickable = false
@@ -269,14 +265,26 @@ export class Card {
     fx.playAndDispose()
     await delay(duration)
 
+    this.root.setParent(this.experience.board.root)
+
+    const lookTarget = this.root.position.clone()
+    lookTarget.z -= 1
+    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    this.prevLookQuat.copyFrom(lookQuat)
+    const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     await gsap.timeline()
       .to(this.backHoverGlow, {visibility: 0, duration, ease})
       .to(this.root.position, {x: bottomRightSlotPos.x, y: bottomRightSlotPos.y, z: LAYER_CARD_Z, duration, ease}, 0)
+      .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
       .to(this.backText, {visibility: 0, duration, ease}, 0)
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration, ease}, 0)
 
     this.backText.dispose()
     this.curStep = 'side'
+  }
+
+  async animHide() {
+    this.root.setEnabled(false)
   }
 
   async animPickFromSide() {
