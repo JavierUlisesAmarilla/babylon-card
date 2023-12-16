@@ -35,7 +35,12 @@ export class Wolf {
 
   async init() {
     const {meshes, animationGroups} = await BABYLON.SceneLoader.ImportMeshAsync('', '/assets/models/', 'wolf.glb', this.experience.scene)
-    meshes.forEach(mesh => mesh.parent = this.rootChild)
+
+    meshes.forEach(mesh => {
+      mesh.parent = this.rootChild
+      mesh.isPickable = false
+    })
+
     this.rootChild.position.z = -0.1
     this.rootChild.rotation.x = -0.5 * Math.PI
     this.animations['run'] = animationGroups[0]
