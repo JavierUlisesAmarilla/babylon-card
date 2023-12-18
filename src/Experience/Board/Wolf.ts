@@ -22,6 +22,12 @@ export class Wolf {
   gsapAnim!: gsap.core.Timeline
   moveToTimeoutIndex!: number
   curAnimKey!: string
+  pathPointArr = [
+    new BABYLON.Vector3(-halfW, halfH, 0),
+    new BABYLON.Vector3(-halfW, -halfH, 0),
+    new BABYLON.Vector3(halfW, -halfH, 0),
+    new BABYLON.Vector3(halfW, halfH, 0),
+  ]
 
   constructor() {
     instance = this
@@ -113,14 +119,7 @@ export class Wolf {
   }
 
   async moveAround() {
-    this.stopMove()
-    const pointArr = [
-      new BABYLON.Vector3(-halfW, halfH, 0),
-      new BABYLON.Vector3(-halfW, -halfH, 0),
-      new BABYLON.Vector3(halfW, -halfH, 0),
-      new BABYLON.Vector3(halfW, halfH, 0),
-    ]
-    await this.moveThroughPath(pointArr)
+    await this.moveThroughPath(this.pathPointArr)
     this.moveAround()
   }
 
