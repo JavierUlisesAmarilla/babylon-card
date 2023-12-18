@@ -7,18 +7,23 @@ export const getRandomTarget = (origin: BABYLON.Vector3, zOffset: number, range:
   return target
 }
 
-export const getLookQuat = (origin: BABYLON.Vector3, target: BABYLON.Vector3) => {
-  const lookAt = BABYLON.Matrix.LookAtLH(origin, target, BABYLON.Vector3.Up()).invert()
-  return BABYLON.Quaternion.FromRotationMatrix(lookAt)
+export const getYLookQuat = (origin: BABYLON.Vector3, target: BABYLON.Vector3) => {
+  return BABYLON.Quaternion.FromRotationMatrix(BABYLON.Matrix.LookAtLH(origin, target, BABYLON.Axis.Y).invert())
+}
+
+export const getZLookQuat = (origin: BABYLON.Vector3, target: BABYLON.Vector3) => {
+  return BABYLON.Quaternion.FromRotationMatrix(BABYLON.Matrix.LookAtLH(origin, target, BABYLON.Axis.Z).invert())
 }
 
 export const generateRandomString = (len: number) => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let result = ''
+
   for (let i2 = 0; i2 < len; i2++) {
     const randomIndex = Math.floor(Math.random() * characters.length)
     result += characters.charAt(randomIndex)
   }
+
   return result
 }
 
@@ -40,12 +45,11 @@ export const delay = (s: number) => {
 export const showPath3D = (path3d: BABYLON.Path3D, size?: number) => {
   size = size || 0.5
   const curve = path3d.getCurve()
-  const points = path3d.getPoints()
   const tangents = path3d.getTangents()
   const normals = path3d.getNormals()
   const binormals = path3d.getBinormals()
   let lineTangents, lineNormals, lineBinormals
-  const lineCurve = BABYLON.CreateLines('lineCurve', {points})
+  const lineCurve = BABYLON.CreateLines('lineCurve', {points: curve})
   lineCurve.color = BABYLON.Color3.Yellow()
 
   for (let i = 0; i < curve.length; i++) {

@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import * as BABYLON from 'babylonjs'
 
+import {getZLookQuat} from '../../../utils/common'
 import gsap from 'gsap'
 
 export class ArrowBox {
   name = 'arrowBox'
   root
+  rootChild
   blockSize
   gradient
   opacity
@@ -32,10 +34,13 @@ export class ArrowBox {
     opacity: number
     frameRate: number
   }) {
-    this.root = BABYLON.CreateBox(this.name, {width, height: blockSize, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
+    this.root = new BABYLON.TransformNode(this.name)
     this.root.position.z = 100
     this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
-    this.root.isPickable = false
+    this.rootChild = BABYLON.CreateBox(this.name, {width, height: blockSize, depth: thickness, faceColors: [color4, color4, color4, color4, color4, color4]})
+    this.rootChild.parent = this.root
+    this.rootChild.isPickable = false
+    this.rootChild.rotation.x = 0.5 * Math.PI
     this.blockSize = blockSize
     this.gradient = gradient
     this.opacity = opacity
@@ -53,13 +58,12 @@ export class ArrowBox {
     const curveTangents = curvePath3d.getTangents()
     this.curDistance = (this.curDistance + this.gapPerFrame) % curveLength
     const curPointIndex = Math.ceil(this.curDistance * curvePointArr.length / curveLength) % curvePointArr.length
-    const curQuat = BABYLON.Quaternion.Zero()
-    BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y, curveTangents[curPointIndex], curQuat)
+    const curQuat = getZLookQuat(BABYLON.Vector3.Zero(), curveTangents[curPointIndex])
     const curPos = curvePointArr[curPointIndex]
     const ease = 'none'
     const visibility = curveLength - this.curDistance > this.blockSize ? Math.min(this.curDistance / (curveLength * this.gradient), this.opacity) : 0
     gsap.timeline()
-      .to(this.root, {
+      .to(this.rootChild, {
         visibility,
         duration: this.frameRate,
         ease,
@@ -87,7 +91,7 @@ export class ArrowBox {
 
   onUpdate() {
     if (this.hide) {
-      this.root.visibility = 0
+      this.rootChild.visibility = 0
     }
   }
 }

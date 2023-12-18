@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 
 import {Experience} from '../Experience'
-import {getLookQuat} from '../../utils/common'
+import {getYLookQuat} from '../../utils/common'
 import gsap from 'gsap'
 
 export class LeftSidebar {
@@ -39,7 +39,7 @@ export class LeftSidebar {
     const targetPos = this.root.position.clone()
     targetPos.x = this.showPosX
     const lookTarget = BABYLON.Vector3.Zero()
-    const lookQuat = getLookQuat(targetPos, lookTarget)
+    const lookQuat = getYLookQuat(targetPos, lookTarget)
     const duration = 0.2
     const ease = 'circ.inOut'
     await gsap.timeline()
@@ -52,7 +52,7 @@ export class LeftSidebar {
     const targetPos = this.root.position.clone()
     targetPos.x = this.hidePosX
     const lookTarget = BABYLON.Vector3.Zero()
-    const lookQuat = getLookQuat(targetPos, lookTarget)
+    const lookQuat = getYLookQuat(targetPos, lookTarget)
     const duration = 0.2
     const ease = 'circ.inOut'
     await gsap.timeline()

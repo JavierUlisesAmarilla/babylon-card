@@ -3,7 +3,7 @@ import * as earcut from 'earcut'
 
 import {GAP, LAYER_CARD_Z, LAYER_PICK_Z, TEXT_DEPTH} from '../../utils/constants'
 import {addGhostlyGlowSpriteTo, createPlane3D} from '../../utils/add-on'
-import {delay, getLookQuat, getRandomTarget} from '../../utils/common'
+import {delay, getRandomTarget, getYLookQuat} from '../../utils/common'
 import {dustCool, explodeCombat, lightCrawl} from '../../utils/sprite-animations'
 
 import {AnimatedSprite} from '../../utils/animated-sprite'
@@ -269,7 +269,7 @@ export class Card {
     this.root.setParent(this.experience.board.root)
     const lookTarget = this.root.position.clone()
     lookTarget.z -= 1
-    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    const lookQuat = getYLookQuat(this.root.position, lookTarget)
     this.prevLookQuat.copyFrom(lookQuat)
     const bottomRightSlotPos = this.experience.board.bottomRightSlot.root.position
     await gsap.timeline()
@@ -297,7 +297,7 @@ export class Card {
 
     const lookTarget = this.root.position.clone()
     lookTarget.z += 10
-    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    const lookQuat = getYLookQuat(this.root.position, lookTarget)
     this.prevLookQuat.copyFrom(lookQuat)
 
     await gsap.timeline()
@@ -320,7 +320,7 @@ export class Card {
 
     const lookTarget = this.root.position.clone()
     lookTarget.z += 1
-    const lookQuat = getLookQuat(this.root.position, lookTarget)
+    const lookQuat = getYLookQuat(this.root.position, lookTarget)
     this.prevLookQuat.copyFrom(lookQuat)
     const duration = 0.5
     const ease = 'circ.inOut'
@@ -373,7 +373,7 @@ export class Card {
     } else {
       this.pickPrevPos.copyFrom(this.root.position)
       const targetPos = new BABYLON.Vector3(0.3, 0, 1.5)
-      const lookQuat = getLookQuat(targetPos.negate(), new BABYLON.Vector3(0, -0.5, 0))
+      const lookQuat = getYLookQuat(targetPos.negate(), new BABYLON.Vector3(0, -0.5, 0))
       await gsap.timeline()
         .to(this.root.position, {x: targetPos.x, y: targetPos.y, z: targetPos.z, duration, ease})
         .to(this.root.rotationQuaternion, {x: lookQuat.x, y: lookQuat.y, z: lookQuat.z, w: lookQuat.w, duration, ease}, 0)
@@ -498,7 +498,7 @@ export class Card {
 
   getRandomLookQuat() {
     const lookTarget = getRandomTarget(this.root.position, -1, 0.2)
-    return getLookQuat(this.root.position, lookTarget)
+    return getYLookQuat(this.root.position, lookTarget)
   }
 
   tweak() {

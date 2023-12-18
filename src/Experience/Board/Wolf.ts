@@ -4,6 +4,7 @@ import 'babylonjs-loaders'
 import * as BABYLON from 'babylonjs'
 
 import {Experience} from '../Experience'
+import {getZLookQuat} from '../../utils/common'
 import gsap from 'gsap'
 
 const halfW = 1.4
@@ -26,14 +27,17 @@ export class Wolf {
     instance = this
     this.experience = new Experience()
     this.root = new BABYLON.TransformNode(this.name)
-    this.root.position.set(-halfW, halfH, 0)
-    this.root.rotationQuaternion = BABYLON.Quaternion.Zero()
     this.rootChild = new BABYLON.TransformNode(this.name)
     this.rootChild.parent = this.root
     this.init()
   }
 
   async init() {
+    // Root
+    this.root.position.set(0, halfH, 0)
+    this.root.rotationQuaternion = getZLookQuat(this.root.position, BABYLON.Vector3.Zero())
+
+    // Root child
     const {meshes, animationGroups} = await BABYLON.SceneLoader.ImportMeshAsync('', '/assets/models/', 'wolf.glb', this.experience.scene)
 
     meshes.forEach(mesh => {
@@ -41,14 +45,15 @@ export class Wolf {
       mesh.isPickable = false
     })
 
-    this.rootChild.position.z = -0.1
-    this.rootChild.rotation.x = -0.5 * Math.PI
+    this.rootChild.rotation.z = Math.PI
+
+    // Animations
     this.animations['run'] = animationGroups[0]
     this.animations['walk'] = animationGroups[1]
     this.animations['creep'] = animationGroups[2]
     this.animations['idle'] = animationGroups[3]
     this.animations['site'] = animationGroups[4]
-    this.playAllAnimations()
+    this.playIdleAnimation()
     this.moveAround()
   }
 
@@ -60,32 +65,29 @@ export class Wolf {
     Object.values(this.animations).forEach(animation => animation.stop())
   }
 
+  playIdleAnimation() {
+    this.playAllAnimations()
+    this.changeAnimation('idle')
+  }
+
   async moveThroughPath(points: BABYLON.Vector3[]) {
     if (this.isMoving) {
       return
     }
 
     this.isMoving = true
-    const path3d = new BABYLON.Path3D(points)
-    const tangents = path3d.getTangents()
-    const fixedForward = BABYLON.Axis.Y
-    const orientationRes = BABYLON.Quaternion.Zero()
-
-    const orientation = (p: number) => {
-      BABYLON.Quaternion.FromUnitVectorsToRef(fixedForward, tangents[p], orientationRes)
-      return orientationRes.clone()
-    }
 
     for (let i = 0; i < points.length; i++) {
       const point = points[i]
-      const orient = orientation(i)
+      const orient = getZLookQuat(this.root.position, point)
       const posDuration = point.clone().subtract(this.root.position).length() * 0.5
       const rotDuration = 0.3
       const ease = 'none'
 
       if (!this.root.position.equals(point)) {
         this.changeAnimation('run')
-        this.gsapAnim = gsap.timeline().to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
+        this.gsapAnim = gsap.timeline()
+          .to(this.root.rotationQuaternion, {x: orient.x, y: orient.y, z: orient.z, w: orient.w, duration: rotDuration, ease})
           .to(this.root.position, {x: point.x, y: point.y, z: point.z, duration: posDuration, ease}, 0)
         await this.gsapAnim
       }
@@ -113,17 +115,12 @@ export class Wolf {
   async moveAround() {
     this.stopMove()
     const pointArr = [
-      this.root.position,
       new BABYLON.Vector3(-halfW, halfH, 0),
       new BABYLON.Vector3(-halfW, -halfH, 0),
       new BABYLON.Vector3(halfW, -halfH, 0),
       new BABYLON.Vector3(halfW, halfH, 0),
     ]
-
-    for (let i = 1; i < pointArr.length; i++) {
-      await this.moveThroughPath([pointArr[i - 1], pointArr[i]])
-    }
-
+    await this.moveThroughPath(pointArr)
     this.moveAround()
   }
 

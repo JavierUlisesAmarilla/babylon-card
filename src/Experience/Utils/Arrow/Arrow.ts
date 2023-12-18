@@ -48,8 +48,8 @@ export class Arrow {
     this.color4 = color4
     this.gradient = gradient
     this.opacity = opacity
-    this.origin = new BABYLON.Vector3(-2, -2, -4 * thickness)
-    this.target = new BABYLON.Vector3(2, -2, -4 * thickness)
+    this.origin = new BABYLON.Vector3(-2, -2, -5 * thickness)
+    this.target = new BABYLON.Vector3(2, -2, -5 * thickness)
     this.reset()
   }
 
