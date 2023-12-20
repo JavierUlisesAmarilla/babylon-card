@@ -113,14 +113,14 @@ export class Card {
     this.frontHoverGlow.setAdditiveBlendMode()
     this.frontHoverGlow.visibility = 0
 
-    this.frontHoverTextBack = BABYLON.MeshBuilder.CreatePlane(name, {width: 0.8 * width, height: 0.3 * height}, this.experience.scene)
-    this.frontHoverTextBack.parent = this.root
-    const frontHoverTextBackMaterial = new BABYLON.StandardMaterial(name)
-    frontHoverTextBackMaterial.diffuseTexture = new BABYLON.Texture('assets/images/border.png')
-    this.frontHoverTextBack.material = frontHoverTextBackMaterial
-    this.frontHoverTextBack.position.z = -GAP
-    this.frontHoverTextBack.visibility = 0
-    this.frontHoverTextBack.isPickable = false
+    // this.frontHoverTextBack = BABYLON.MeshBuilder.CreatePlane(name, {width: 0.8 * width, height: 0.3 * height}, this.experience.scene)
+    // this.frontHoverTextBack.parent = this.root
+    // const frontHoverTextBackMaterial = new BABYLON.StandardMaterial(name)
+    // frontHoverTextBackMaterial.diffuseTexture = new BABYLON.Texture('assets/images/border.png')
+    // this.frontHoverTextBack.material = frontHoverTextBackMaterial
+    // this.frontHoverTextBack.position.z = -GAP
+    // this.frontHoverTextBack.visibility = 0
+    // this.frontHoverTextBack.isPickable = false
 
     front.actionManager = new BABYLON.ActionManager(this.experience.scene)
     front.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPointerOverTrigger}, () => this.onPointerOver()))
@@ -162,7 +162,7 @@ export class Card {
     back.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger: BABYLON.ActionManager.OnPickUpTrigger}, () => this.onPickUp()))
 
     this.tweak()
-    this.reset()
+    // this.reset()
 
     this.experience.drag.on('pointerMove', (mesh: BABYLON.Mesh | undefined, _diff: BABYLON.Vector3, curPos: BABYLON.Vector3) => {
       if (mesh?.name === name && this.isPointerDown && (this.curStep === 'bottom' || this.curStep === 'lay')) {
@@ -279,7 +279,7 @@ export class Card {
       .to(this.backText, {visibility: 0, duration, ease}, 0)
       .to(this.root.scaling, {x: 1, y: 1, z: 1, duration, ease}, 0)
 
-    this.backText.dispose()
+    this.backText?.dispose()
     this.curStep = 'side'
   }
 

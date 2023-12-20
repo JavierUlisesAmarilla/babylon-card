@@ -31,8 +31,8 @@ export class Slot {
 
   onPick(e: BABYLON.ActionEvent) {
     const pickedPoint = e.additionalData.pickedPoint
-    this.experience.board.wolf.moveTo(pickedPoint)
+    this.experience.board.wolf?.moveTo(pickedPoint)
     pickedPoint.z -= GAP
-    this.experience.board.arrow.setOrigin(pickedPoint)
+    this.experience.board.arrow?.setOrigin(pickedPoint)
   }
 }

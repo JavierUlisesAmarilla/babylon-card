@@ -21,8 +21,8 @@ export class Board {
   bottomRightSlot
   cards
   leftSidebar
-  wolf
-  arrow
+  wolf!: Wolf
+  arrow!: Arrow
   size = 10
   slotWidth = 0.471
   slotHeight = 0.77
@@ -73,14 +73,14 @@ export class Board {
     this.leftSidebar = new LeftSidebar()
 
     // Wolf
-    this.wolf = new Wolf()
+    // this.wolf = new Wolf()
 
     // Arrow
-    this.arrow = new Arrow({})
-    this.drag.on('pointerMove', (_mesh: BABYLON.Mesh | undefined, _diff: BABYLON.Vector3, curPos: BABYLON.Vector3) => {
-      curPos.z -= GAP
-      this.arrow.setTarget(curPos)
-    })
+    // this.arrow = new Arrow({})
+    // this.drag.on('pointerMove', (_mesh: BABYLON.Mesh | undefined, _diff: BABYLON.Vector3, curPos: BABYLON.Vector3) => {
+    //   curPos.z -= GAP
+    //   this.arrow.setTarget(curPos)
+    // })
   }
 
   update() {
@@ -89,8 +89,8 @@ export class Board {
 
   onPick(e: BABYLON.ActionEvent) {
     const pickedPoint = e.additionalData.pickedPoint
-    this.wolf.moveTo(pickedPoint)
+    this.wolf?.moveTo(pickedPoint)
     pickedPoint.z -= GAP
-    this.arrow.setOrigin(pickedPoint)
+    this.arrow?.setOrigin(pickedPoint)
   }
 }
